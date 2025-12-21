@@ -13,7 +13,7 @@ SECRET_KEY = 'django-insecure-faxb$r_2xj1fpn35#yph#jfgcs&r-8^ztax)d(5yw37ffunixr
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
