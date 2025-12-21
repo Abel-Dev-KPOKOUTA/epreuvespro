@@ -53,7 +53,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 
 ROOT_URLCONF = 'Epreuvespro.urls'
 
@@ -121,6 +125,23 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# settings.py
+
+# Chemin où les fichiers statiques collectés seront stockés
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # Ou tout autre chemin
+STATIC_URL = 'static/'
+# Dossiers supplémentaires où Django cherchera les fichiers statiques
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',  # Votre dossier static local
+    # BASE_DIR / 'autre_dossier_static',
+]
+# Moteurs de recherche de fichiers statiques
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+]
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
