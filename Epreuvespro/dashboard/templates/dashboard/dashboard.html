@@ -1,0 +1,165 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - EpreuvesPro Bénin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <a href="{% url 'core:accueil' %}" class="sidebar-logo">
+            <div class="logo-icon">EP</div>
+            <span class="logo-text">EpreuvesPro</span>
+        </a>
+
+        <ul class="sidebar-menu">
+            <li class="menu-item">
+                <a href="{% url 'dashboard:dashboard' %}" class="menu-link active">
+                    <span class="menu-icon">🏠</span>
+                    <span>Tableau de bord</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="{% url 'dashboard:parcourir_epreuves' %}" class="menu-link">
+                    <span class="menu-icon">📚</span>
+                    <span>Parcourir Épreuves</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="{% url 'dashboard:bibliotheque' %}" class="menu-link">
+                    <span class="menu-icon">📖</span>
+                    <span>Bibliothèque</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="{% url 'dashboard:mes_telechargements' %}" class="menu-link">
+                    <span class="menu-icon">📥</span>
+                    <span>Mes Téléchargements</span>
+                </a>
+            </li>
+
+            <div class="menu-divider"></div>
+
+            <li class="menu-item">
+                <a href="{% url 'dashboard:mon_abonnement' %}" class="menu-link">
+                    <span class="menu-icon">💳</span>
+                    <span>Mon Abonnement</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="#" class="menu-link">
+                    <span class="menu-icon">👤</span>
+                    <span>Mon Profil</span>
+                </a>
+            </li>
+
+            <div class="menu-divider"></div>
+
+            <li class="menu-item">
+                <a href="{% url 'accounts:logout' %}" class="menu-link">
+                    <span class="menu-icon">🚪</span>
+                    <span>Déconnexion</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
+                <h1>Tableau de bord</h1>
+                <p class="header-subtitle">Bienvenue {{ user.first_name }} !</p>
+            </div>
+            <div class="header-right">
+                <div class="user-menu">
+                    <div class="user-avatar">{{ user.first_name.0 }}{{ user.last_name.0 }}</div>
+                    <div class="user-info">
+                        <h3>{{ user.first_name }} {{ user.last_name }}</h3>
+                        <p>{{ user.get_classe_display }}</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Welcome Section -->
+            <div class="welcome-section">
+                <div class="welcome-content">
+                    <h2>👋 Bonjour {{ user.first_name }} !</h2>
+                    <p>Prêt à exceller dans vos études ? Explorez nos ressources et maximisez votre réussite.</p>
+                    <a href="{% url 'dashboard:parcourir_epreuves' %}" class="btn btn-white">Parcourir les épreuves</a>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon blue">📥</div>
+                    </div>
+                    <div class="stat-label">Téléchargements</div>
+                    <div class="stat-value">{{ total_telechargements }}</div>
+                    <div class="stat-change positive">↗ {{ telechargements_mois }} ce mois</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon orange">📚</div>
+                    </div>
+                    <div class="stat-label">Épreuves Disponibles</div>
+                    <div class="stat-value">{{ epreuves_disponibles }}</div>
+                    <div class="stat-change positive">Pour {{ user.get_classe_display }}</div>
+                </div>
+
+                <!-- Autres stats... -->
+            </div>
+
+            <!-- Subscription Card -->
+            {% if abonnement %}
+            <div class="subscription-card">
+                <div class="subscription-content">
+                    <div class="subscription-badge">{{ abonnement.plan.nom }}</div>
+                    <h3 class="subscription-title">Votre Abonnement</h3>
+                    <p class="subscription-desc">
+                        Vous avez utilisé {{ abonnement.telechargements_utilises }} 
+                        sur {% if abonnement.plan.limite_telechargements == 0 %}∞{% else %}{{ abonnement.plan.limite_telechargements }}{% endif %} 
+                        téléchargements ce mois
+                    </p>
+                    {% if abonnement.plan.limite_telechargements > 0 %}
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: {{ pourcentage_utilise }}%;"></div>
+                    </div>
+                    <p class="progress-text">
+                        {{ abonnement.plan.limite_telechargements|add:"-"|add:abonnement.telechargements_utilises }} 
+                        téléchargements restants
+                    </p>
+                    {% endif %}
+                    <a href="#" class="btn btn-white" style="margin-top: 1rem;">
+                        Upgrader mon plan
+                    </a>
+                </div>
+            </div>
+            {% else %}
+            <div class="alert alert-warning">
+                Vous n'avez pas d'abonnement actif. 
+                <a href="#">Souscrire maintenant</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('mobile-show');
+        }
+    </script>
+</body>
+</html>

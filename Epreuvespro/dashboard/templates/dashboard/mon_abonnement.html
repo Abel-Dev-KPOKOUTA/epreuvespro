@@ -1,0 +1,1029 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Abonnement - EpreuvesPro Bénin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <style>
+        :root {
+            --primary: #1e40af;
+            --primary-light: #3b82f6;
+            --secondary: #059669;
+            --accent: #d97706;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --white: #FFFFFF;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --success: #059669;
+            --warning: #f59e0b;
+            --danger: #dc2626;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: var(--white);
+            border-right: 1px solid var(--gray-200);
+            padding: 2rem 0;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0 1.5rem;
+            margin-bottom: 2rem;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .logo-text {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0 1rem;
+        }
+
+        .menu-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem 1rem;
+            color: var(--gray-700);
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .menu-link:hover,
+        .menu-link.active {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .menu-icon {
+            font-size: 1.25rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .menu-divider {
+            margin: 1.5rem 1rem;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: var(--white);
+            border-bottom: 1px solid var(--gray-200);
+            padding: 1.25rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .header-left h1 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .header-subtitle {
+            color: var(--gray-600);
+            font-size: 0.875rem;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 1rem;
+            background: var(--gray-100);
+            border-radius: 10px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .user-info h3 {
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .user-info p {
+            font-size: 0.75rem;
+            color: var(--gray-600);
+        }
+
+        /* Content */
+        .content {
+            padding: 2rem;
+        }
+
+        /* Current Subscription Card */
+        .current-subscription {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            color: var(--white);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .current-subscription::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .subscription-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .plan-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.875rem;
+        }
+
+        .subscription-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+        }
+
+        .subscription-details {
+            position: relative;
+            z-index: 1;
+        }
+
+        .subscription-details h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-item h4 {
+            font-size: 0.875rem;
+            opacity: 0.9;
+            margin-bottom: 0.25rem;
+            font-weight: 500;
+        }
+
+        .detail-item p {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .progress-section {
+            margin-top: 1.5rem;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--white);
+            border-radius: 10px;
+            transition: width 0.3s;
+        }
+
+        .subscription-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn {
+            padding: 0.875rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-white {
+            background: var(--white);
+            color: var(--primary);
+        }
+
+        .btn-white:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-outline-white {
+            background: transparent;
+            border: 2px solid var(--white);
+            color: var(--white);
+        }
+
+        .btn-outline-white:hover {
+            background: var(--white);
+            color: var(--primary);
+        }
+
+        /* No Subscription State */
+        .no-subscription {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            border: 2px dashed var(--gray-300);
+        }
+
+        .no-subscription-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .no-subscription h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+
+        .no-subscription p {
+            color: var(--gray-600);
+            margin-bottom: 2rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(30, 64, 175, 0.3);
+        }
+
+        /* Plans Comparison */
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--dark);
+        }
+
+        .plans-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .plan-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 2px solid var(--gray-200);
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .plan-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary);
+        }
+
+        .plan-card.recommended {
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px rgba(30, 64, 175, 0.2);
+        }
+
+        .recommended-badge {
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            background: linear-gradient(135deg, var(--accent), #f59e0b);
+            color: var(--white);
+            padding: 0.375rem 1rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .plan-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        .plan-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .plan-price {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .plan-price-small {
+            font-size: 1rem;
+            color: var(--gray-600);
+        }
+
+        .plan-duration {
+            color: var(--gray-600);
+            font-size: 0.875rem;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .plan-features li {
+            padding: 0.75rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.875rem;
+            color: var(--gray-700);
+        }
+
+        .feature-icon {
+            color: var(--success);
+            font-weight: 700;
+        }
+
+        .btn-plan {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 10px;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-upgrade {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: var(--white);
+            border: none;
+        }
+
+        .btn-upgrade:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(30, 64, 175, 0.3);
+        }
+
+        .btn-current {
+            background: var(--gray-200);
+            color: var(--gray-600);
+            cursor: not-allowed;
+        }
+
+        /* Payment History */
+        .history-section {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid var(--gray-200);
+            margin-bottom: 2rem;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .history-table thead {
+            background: var(--gray-100);
+        }
+
+        .history-table th {
+            text-align: left;
+            padding: 1rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--gray-700);
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        .history-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--gray-200);
+            font-size: 0.875rem;
+        }
+
+        .history-table tbody tr:hover {
+            background: var(--gray-100);
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .status-valide {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-en-attente {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-echoue {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Alert */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .alert-warning {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fbbf24;
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #60a5fa;
+        }
+
+        /* Mobile Menu Button */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.mobile-show {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .plans-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 1rem;
+            }
+
+            .current-subscription {
+                padding: 1.5rem;
+            }
+
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .subscription-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+
+            .user-info {
+                display: none;
+            }
+
+            .history-table {
+                font-size: 0.75rem;
+            }
+
+            .history-table th,
+            .history-table td {
+                padding: 0.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .current-subscription h2 {
+                font-size: 1.5rem;
+            }
+
+            .detail-item p {
+                font-size: 1.25rem;
+            }
+
+            .plan-price {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <a href="{% url 'core:accueil' %}" class="sidebar-logo">
+            <div class="logo-icon">EP</div>
+            <span class="logo-text">EpreuvesPro</span>
+        </a>
+
+        <ul class="sidebar-menu">
+            <li class="menu-item">
+                <a href="{% url 'dashboard:dashboard' %}" class="menu-link">
+                    <span class="menu-icon">🏠</span>
+                    <span>Tableau de bord</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="{% url 'dashboard:parcourir_epreuves' %}" class="menu-link">
+                    <span class="menu-icon">📚</span>
+                    <span>Parcourir Épreuves</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="{% url 'dashboard:bibliotheque' %}" class="menu-link">
+                    <span class="menu-icon">📖</span>
+                    <span>Bibliothèque</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="{% url 'dashboard:mes_telechargements' %}" class="menu-link">
+                    <span class="menu-icon">📥</span>
+                    <span>Mes Téléchargements</span>
+                </a>
+            </li>
+
+            <div class="menu-divider"></div>
+
+            <li class="menu-item">
+                <a href="{% url 'dashboard:mon_abonnement' %}" class="menu-link active">
+                    <span class="menu-icon">💳</span>
+                    <span>Mon Abonnement</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="#" class="menu-link">
+                    <span class="menu-icon">👤</span>
+                    <span>Mon Profil</span>
+                </a>
+            </li>
+
+            <div class="menu-divider"></div>
+
+            <li class="menu-item">
+                <a href="{% url 'accounts:logout' %}" class="menu-link">
+                    <span class="menu-icon">🚪</span>
+                    <span>Déconnexion</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
+                <div>
+                    <h1>💳 Mon Abonnement</h1>
+                    <p class="header-subtitle">Gérez votre abonnement et accédez à toutes les épreuves</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="user-menu">
+                    <div class="user-avatar">{{ user.first_name.0 }}{{ user.last_name.0 }}</div>
+                    <div class="user-info">
+                        <h3>{{ user.first_name }} {{ user.last_name }}</h3>
+                        <p>{{ user.get_classe_display }}</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="content">
+            {% if abonnement %}
+            <!-- Current Subscription Card -->
+            <div class="current-subscription">
+                <div class="subscription-header">
+                    <div class="plan-badge">{{ abonnement.plan.nom }}</div>
+                    <div class="subscription-status">
+                        <span class="status-dot"></span>
+                        Actif
+                    </div>
+                </div>
+
+                <div class="subscription-details">
+                    <h2>Votre Abonnement {{ abonnement.plan.nom }}</h2>
+                    
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <h4>Téléchargements utilisés</h4>
+                            <p>{{ stats.telechargements_utilises }} / {% if abonnement.plan.limite_telechargements == 0 %}∞{% else %}{{ stats.limite_telechargements }}{% endif %}</p>
+                        </div>
+                        <div class="detail-item">
+                            <h4>Téléchargements restants</h4>
+                            <p>{{ stats.telechargements_restants }}</p>
+                        </div>
+                        <div class="detail-item">
+                            <h4>Jours restants</h4>
+                            <p>{{ stats.jours_restants }} jours</p>
+                        </div>
+                        <div class="detail-item">
+                            <h4>Date de renouvellement</h4>
+                            <p style="font-size: 1.25rem;">{{ stats.date_renouvellement|date:"d/m/Y" }}</p>
+                        </div>
+                    </div>
+
+                    {% if abonnement.plan.limite_telechargements > 0 %}
+                    <div class="progress-section">
+                        <div class="progress-label">
+                            <span>Utilisation ce mois</span>
+                            <span>{{ stats.pourcentage_utilise|floatformat:0 }}%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: {{ stats.pourcentage_utilise }}%;"></div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="subscription-actions">
+                        <a href="#plans" class="btn btn-white">Upgrader mon plan</a>
+                        {% if not abonnement.renouvellement_auto %}
+                        <a href="#" class="btn btn-outline-white">Activer le renouvellement auto</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Warning if low usage -->
+            {% if stats.telechargements_restants != '∞' and stats.telechargements_restants < 5 %}
+            <div class="alert alert-warning">
+                <span style="font-size: 1.5rem;">⚠️</span>
+                <div>
+                    <strong>Attention !</strong> Il ne vous reste que {{ stats.telechargements_restants }} téléchargement{{ stats.telechargements_restants|pluralize }}.
+                    Pensez à upgrader votre plan pour ne pas être bloqué.
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Warning if expiring soon -->
+            {% if stats.jours_restants < 7 %}
+            <div class="alert alert-warning">
+                <span style="font-size: 1.5rem;">⏰</span>
+                <div>
+                    <strong>Renouvellement proche !</strong> Votre abonnement expire dans {{ stats.jours_restants }} jour{{ stats.jours_restants|pluralize }}.
+                    N'oubliez pas de le renouveler.
+                </div>
+            </div>
+            {% endif %}
+
+            {% else %}
+            <!-- No Subscription State -->
+            <div class="no-subscription">
+                <div class="no-subscription-icon">💳</div>
+                <h2>Aucun abonnement actif</h2>
+                <p>Souscrivez à un abonnement pour accéder à toutes nos épreuves et maximiser votre réussite !</p>
+                <a href="#plans" class="btn btn-primary">Découvrir nos plans</a>
+            </div>
+            {% endif %}
+
+            <!-- Plans Comparison -->
+            <div id="plans">
+                <h2 class="section-title">📋 Nos Plans d'Abonnement</h2>
+                <div class="plans-grid">
+                    {% for plan in plans %}
+                    <div class="plan-card {% if plan.type_plan == 'annuel' %}recommended{% endif %}">
+                        {% if plan.type_plan == 'annuel' %}
+                        <div class="recommended-badge">⭐ Recommandé</div>
+                        {% endif %}
+
+                        <div class="plan-header">
+                            <h3 class="plan-name">{{ plan.nom }}</h3>
+                            <div class="plan-price">
+                                {% if plan.prix == 0 %}
+                                Gratuit
+                                {% else %}
+                                <span class="plan-price-small">{{ plan.prix|floatformat:0 }} FCFA</span>
+                                {% endif %}
+                            </div>
+                            <p class="plan-duration">
+                                {% if plan.type_plan == 'mensuel' %}par mois
+                                {% elif plan.type_plan == 'annuel' %}par an
+                                {% endif %}
+                            </p>
+                        </div>
+
+                        <ul class="plan-features">
+                            <li>
+                                <span class="feature-icon">✓</span>
+                                {% if plan.limite_telechargements == 0 %}
+                                Téléchargements illimités
+                                {% else %}
+                                {{ plan.limite_telechargements }} téléchargements/mois
+                                {% endif %}
+                            </li>
+                            <li>
+                                <span class="feature-icon">✓</span>
+                                Accès à toutes les épreuves
+                            </li>
+                            <li>
+                                <span class="feature-icon">✓</span>
+                                Corrigés détaillés inclus
+                            </li>
+                            <li>
+                                <span class="feature-icon">✓</span>
+                                Support prioritaire
+                            </li>
+                            {% if plan.type_plan == 'annuel' %}
+                            <li>
+                                <span class="feature-icon">✓</span>
+                                2 mois offerts
+                            </li>
+                            {% endif %}
+                        </ul>
+
+                        {% if abonnement and abonnement.plan == plan %}
+                        <button class="btn btn-plan btn-current" disabled>
+                            Plan actuel
+                        </button>
+                        {% else %}
+                        <a href="#" class="btn btn-plan btn-upgrade">
+                            {% if plan.prix == 0 %}
+                            Choisir ce plan
+                            {% else %}
+                            Souscrire maintenant
+                            {% endif %}
+                        </a>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Payment History -->
+            {% if paiements %}
+            <div class="history-section">
+                <h2 class="section-title">📜 Historique des Paiements</h2>
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Montant</th>
+                            <th>Méthode</th>
+                            <th>Statut</th>
+                            <th>Référence</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for paiement in paiements %}
+                        <tr>
+                            <td>{{ paiement.date_paiement|date:"d/m/Y" }}</td>
+                            <td>{{ paiement.description|default:"Abonnement" }}</td>
+                            <td><strong>{{ paiement.montant|floatformat:0 }} FCFA</strong></td>
+                            <td>{{ paiement.get_methode_display }}</td>
+                            <td>
+                                <span class="status-badge status-{{ paiement.statut }}">
+                                    {{ paiement.get_statut_display }}
+                                </span>
+                            </td>
+                            <td style="font-family: monospace; font-size: 0.75rem;">{{ paiement.reference }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+
+            <!-- Subscription History -->
+            {% if historique_abonnements %}
+            <div class="history-section">
+                <h2 class="section-title">🕒 Historique des Abonnements</h2>
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Plan</th>
+                            <th>Date début</th>
+                            <th>Date fin</th>
+                            <th>Statut</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ancien_abonnement in historique_abonnements %}
+                        <tr>
+                            <td><strong>{{ ancien_abonnement.plan.nom }}</strong></td>
+                            <td>{{ ancien_abonnement.date_debut|date:"d/m/Y" }}</td>
+                            <td>{{ ancien_abonnement.date_fin|date:"d/m/Y" }}</td>
+                            <td>
+                                {% if ancien_abonnement.est_actif %}
+                                <span class="status-badge status-valide">Actif</span>
+                                {% else %}
+                                <span class="status-badge status-echoue">Expiré</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('mobile-show');
+        }
+
+        // Fermer le sidebar en cliquant en dehors (mobile)
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const menuBtn = document.querySelector('.mobile-menu-btn');
+            
+            if (window.innerWidth <= 1024) {
+                if (!sidebar.contains(event.target) && !menuBtn.contains(event.target)) {
+                    sidebar.classList.remove('mobile-show');
+                }
+            }
+        });
+
+        // Gérer le resize
+        window.addEventListener('resize', function() {
+            const sidebar = document.getElementById('sidebar');
+            if (window.innerWidth > 1024) {
+                sidebar.classList.remove('mobile-show');
+            }
+        });
+
+        // Smooth scroll vers les plans
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

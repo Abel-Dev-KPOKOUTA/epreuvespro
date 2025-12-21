@@ -1,0 +1,887 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mes Téléchargements - EpreuvesPro Bénin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <style>
+        :root {
+            --primary: #1e40af;
+            --primary-light: #3b82f6;
+            --secondary: #059669;
+            --accent: #d97706;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --white: #FFFFFF;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: var(--white);
+            border-right: 1px solid var(--gray-200);
+            padding: 2rem 0;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0 1.5rem;
+            margin-bottom: 2rem;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .logo-text {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0 1rem;
+        }
+
+        .menu-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem 1rem;
+            color: var(--gray-700);
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .menu-link:hover,
+        .menu-link.active {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .menu-icon {
+            font-size: 1.25rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .menu-divider {
+            margin: 1.5rem 1rem;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: var(--white);
+            border-bottom: 1px solid var(--gray-200);
+            padding: 1.25rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .header-left h1 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .header-subtitle {
+            color: var(--gray-600);
+            font-size: 0.875rem;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 1rem;
+            background: var(--gray-100);
+            border-radius: 10px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .user-info h3 {
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .user-info p {
+            font-size: 0.75rem;
+            color: var(--gray-600);
+        }
+
+        /* Content */
+        .content {
+            padding: 2rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+        }
+
+        .stat-icon.blue { background: #dbeafe; }
+        .stat-icon.green { background: #d1fae5; }
+        .stat-icon.orange { background: #fed7aa; }
+        .stat-icon.purple { background: #e9d5ff; }
+
+        .stat-details h3 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-details p {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+        }
+
+        /* Filters Section */
+        .filters-section {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--gray-200);
+        }
+
+        .filters-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .filters-header h2 {
+            font-size: 1.125rem;
+            font-weight: 700;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .filter-group label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--gray-700);
+        }
+
+        .filter-group select,
+        .filter-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            background: var(--white);
+            transition: all 0.3s;
+        }
+
+        .filter-group select:focus,
+        .filter-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+        }
+
+        .search-bar {
+            position: relative;
+        }
+
+        .search-bar input {
+            padding-left: 2.5rem;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.875rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-600);
+        }
+
+        .filters-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.25rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--gray-300);
+            color: var(--gray-700);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Downloads Table */
+        .downloads-section {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid var(--gray-200);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .downloads-table {
+            width: 100%;
+            border-collapse: collapse;
+            overflow-x: auto;
+            display: block;
+        }
+
+        .downloads-table thead {
+            background: var(--gray-100);
+        }
+
+        .downloads-table th {
+            text-align: left;
+            padding: 1rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--gray-700);
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        .downloads-table tbody {
+            display: table;
+            width: 100%;
+        }
+
+        .downloads-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--gray-200);
+            font-size: 0.875rem;
+        }
+
+        .downloads-table tbody tr {
+            transition: all 0.3s;
+        }
+
+        .downloads-table tbody tr:hover {
+            background: var(--gray-100);
+        }
+
+        .download-type {
+            display: inline-block;
+            padding: 0.25rem 0.625rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .type-epreuve { background: #dbeafe; color: #1e40af; }
+        .type-corrige { background: #d1fae5; color: #065f46; }
+        .type-livre { background: #fed7aa; color: #92400e; }
+
+        .download-name {
+            font-weight: 600;
+            color: var(--dark);
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .download-date {
+            color: var(--gray-600);
+            font-size: 0.8rem;
+        }
+
+        .btn-download {
+            background: linear-gradient(135deg, var(--secondary), #10b981);
+            color: var(--white);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(5, 150, 105, 0.3);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            color: var(--gray-600);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        .pagination a,
+        .pagination span {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--gray-700);
+            transition: all 0.3s;
+        }
+
+        .pagination a:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .pagination .active {
+            background: var(--primary);
+            color: var(--white);
+            border-color: var(--primary);
+        }
+
+        /* Mobile Menu Button */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.mobile-show {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .downloads-table {
+                font-size: 0.8rem;
+            }
+
+            .downloads-table th,
+            .downloads-table td {
+                padding: 0.75rem 0.5rem;
+            }
+
+            .user-info {
+                display: none;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .downloads-table thead {
+                display: none;
+            }
+
+            .downloads-table tbody {
+                display: block;
+            }
+
+            .downloads-table tr {
+                display: block;
+                margin-bottom: 1rem;
+                border: 1px solid var(--gray-200);
+                border-radius: 8px;
+                padding: 1rem;
+            }
+
+            .downloads-table td {
+                display: block;
+                padding: 0.5rem 0;
+                border: none;
+            }
+
+            .downloads-table td:before {
+                content: attr(data-label);
+                font-weight: 600;
+                display: inline-block;
+                margin-right: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <a href="{% url 'core:accueil' %}" class="sidebar-logo">
+            <div class="logo-icon">EP</div>
+            <span class="logo-text">EpreuvesPro</span>
+        </a>
+
+        <ul class="sidebar-menu">
+            <li class="menu-item">
+                <a href="{% url 'dashboard:dashboard' %}" class="menu-link">
+                    <span class="menu-icon">🏠</span>
+                    <span>Tableau de bord</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="{% url 'dashboard:parcourir_epreuves' %}" class="menu-link">
+                    <span class="menu-icon">📚</span>
+                    <span>Parcourir Épreuves</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="{% url 'dashboard:bibliotheque' %}" class="menu-link">
+                    <span class="menu-icon">📖</span>
+                    <span>Bibliothèque</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="{% url 'dashboard:mes_telechargements' %}" class="menu-link active">
+                    <span class="menu-icon">📥</span>
+                    <span>Mes Téléchargements</span>
+                </a>
+            </li>
+
+            <div class="menu-divider"></div>
+
+            <li class="menu-item">
+                <a href="{% url 'dashboard:mon_abonnement' %}" class="menu-link">
+                    <span class="menu-icon">💳</span>
+                    <span>Mon Abonnement</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="#" class="menu-link">
+                    <span class="menu-icon">👤</span>
+                    <span>Mon Profil</span>
+                </a>
+            </li>
+
+            <div class="menu-divider"></div>
+
+            <li class="menu-item">
+                <a href="{% url 'accounts:logout' %}" class="menu-link">
+                    <span class="menu-icon">🚪</span>
+                    <span>Déconnexion</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
+                <div>
+                    <h1>📥 Mes Téléchargements</h1>
+                    <p class="header-subtitle">Historique complet de vos téléchargements</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="user-menu">
+                    <div class="user-avatar">{{ user.first_name.0 }}{{ user.last_name.0 }}</div>
+                    <div class="user-info">
+                        <h3>{{ user.first_name }} {{ user.last_name }}</h3>
+                        <p>{{ user.get_classe_display }}</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon blue">📊</div>
+                    <div class="stat-details">
+                        <h3>{{ total_telechargements }}</h3>
+                        <p>Téléchargements totaux</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">📚</div>
+                    <div class="stat-details">
+                        <h3>{{ telechargements_epreuves }}</h3>
+                        <p>Épreuves</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange">✅</div>
+                    <div class="stat-details">
+                        <h3>{{ telechargements_corriges }}</h3>
+                        <p>Corrigés</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon purple">📖</div>
+                    <div class="stat-details">
+                        <h3>{{ telechargements_ce_mois }}</h3>
+                        <p>Ce mois</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters Section -->
+            <div class="filters-section">
+                <div class="filters-header">
+                    <h2>🔍 Filtrer l'historique</h2>
+                </div>
+
+                <form method="get" id="filterForm">
+                    <div class="filters-grid">
+                        <!-- Type -->
+                        <div class="filter-group">
+                            <label for="type">Type de contenu</label>
+                            <select name="type" id="type" onchange="document.getElementById('filterForm').submit()">
+                                <option value="">Tous les types</option>
+                                {% for type_key, type_label in types_disponibles %}
+                                <option value="{{ type_key }}" {% if type_key == type_selectionne %}selected{% endif %}>
+                                    {{ type_label }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Date début -->
+                        <div class="filter-group">
+                            <label for="date_debut">Date de début</label>
+                            <input type="date" name="date_debut" id="date_debut" value="{{ date_debut }}">
+                        </div>
+
+                        <!-- Date fin -->
+                        <div class="filter-group">
+                            <label for="date_fin">Date de fin</label>
+                            <input type="date" name="date_fin" id="date_fin" value="{{ date_fin }}">
+                        </div>
+
+                        <!-- Recherche -->
+                        <div class="filter-group search-bar">
+                            <label for="search">Rechercher</label>
+                            <span class="search-icon">🔍</span>
+                            <input type="text" name="search" id="search" value="{{ search }}" placeholder="Titre...">
+                        </div>
+                    </div>
+
+                    <div class="filters-actions">
+                        <button type="submit" class="btn btn-primary">Appliquer les filtres</button>
+                        <a href="{% url 'dashboard:mes_telechargements' %}" class="btn btn-outline">Réinitialiser</a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Downloads Section -->
+            <div class="downloads-section">
+                {% if telechargements %}
+                <div class="section-header">
+                    <h2>{{ total_telechargements }} téléchargement{{ total_telechargements|pluralize }} trouvé{{ total_telechargements|pluralize }}</h2>
+                </div>
+
+                <table class="downloads-table">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Nom</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for telechargement in telechargements %}
+                        <tr>
+                            <td data-label="Type">
+                                <span class="download-type type-{{ telechargement.type_contenu }}">
+                                    {% if telechargement.type_contenu == 'epreuve' %}📚 Épreuve
+                                    {% elif telechargement.type_contenu == 'corrige' %}✅ Corrigé
+                                    {% elif telechargement.type_contenu == 'livre' %}📖 Livre
+                                    {% endif %}
+                                </span>
+                            </td>
+                            <td data-label="Nom">
+                                <span class="download-name">{{ telechargement.objet_nom|truncatechars:50 }}</span>
+                                <span class="download-date">{{ telechargement.date_telechargement|date:"d/m/Y à H:i" }}</span>
+                            </td>
+                            <td data-label="Date">
+                                {{ telechargement.date_telechargement|date:"d/m/Y" }}
+                            </td>
+
+                            <td data-label="Action">
+                                {% if telechargement.slug %}
+                                    {% if telechargement.type_contenu == 'epreuve' %}
+                                    <a href="{% url 'epreuves:telecharger_epreuve' telechargement.slug %}" class="btn-download">
+                                        📥 Re-télécharger
+                                    </a>
+                                    {% elif telechargement.type_contenu == 'corrige' %}
+                                    <a href="{% url 'epreuves:telecharger_corrige' telechargement.slug %}" class="btn-download">
+                                        📥 Re-télécharger
+                                    </a>
+                                    {% endif %}
+                                {% else %}
+                                    <span style="color: var(--gray-600); font-size: 0.875rem;">Non disponible</span>
+                                {% endif %}
+                            </td>
+
+
+
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <!-- Pagination -->
+                {% if telechargements.has_other_pages %}
+                <div class="pagination">
+                    {% if telechargements.has_previous %}
+                    <a href="?page=1{% if type_selectionne %}&type={{ type_selectionne }}{% endif %}{% if date_debut %}&date_debut={{ date_debut }}{% endif %}{% if date_fin %}&date_fin={{ date_fin }}{% endif %}{% if search %}&search={{ search }}{% endif %}">‹‹</a>
+                    <a href="?page={{ telechargements.previous_page_number }}{% if type_selectionne %}&type={{ type_selectionne }}{% endif %}{% if date_debut %}&date_debut={{ date_debut }}{% endif %}{% if date_fin %}&date_fin={{ date_fin }}{% endif %}{% if search %}&search={{ search }}{% endif %}">‹</a>
+                    {% endif %}
+
+                    <span class="active">{{ telechargements.number }}</span>
+
+                    {% if telechargements.has_next %}
+                    <a href="?page={{ telechargements.next_page_number }}{% if type_selectionne %}&type={{ type_selectionne }}{% endif %}{% if date_debut %}&date_debut={{ date_debut }}{% endif %}{% if date_fin %}&date_fin={{ date_fin }}{% endif %}{% if search %}&search={{ search }}{% endif %}">›</a>
+                    <a href="?page={{ telechargements.paginator.num_pages }}{% if type_selectionne %}&type={{ type_selectionne }}{% endif %}{% if date_debut %}&date_debut={{ date_debut }}{% endif %}{% if date_fin %}&date_fin={{ date_fin }}{% endif %}{% if search %}&search={{ search }}{% endif %}">››</a>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                {% else %}
+                <!-- Empty State -->
+                <div class="empty-state">
+                    <div class="empty-icon">📥</div>
+                    <h3>Aucun téléchargement</h3>
+                    <p>Vous n'avez pas encore téléchargé d'épreuves ou de livres.</p>
+                    <a href="{% url 'dashboard:parcourir_epreuves' %}" class="btn btn-primary">
+                        Explorer les épreuves
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('mobile-show');
+        }
+
+        // Fermer le sidebar en cliquant en dehors (mobile)
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const menuBtn = document.querySelector('.mobile-menu-btn');
+            
+            if (window.innerWidth <= 1024) {
+                if (!sidebar.contains(event.target) && !menuBtn.contains(event.target)) {
+                    sidebar.classList.remove('mobile-show');
+                }
+            }
+        });
+
+        // Gérer le resize
+        window.addEventListener('resize', function() {
+            const sidebar = document.getElementById('sidebar');
+            if (window.innerWidth > 1024) {
+                sidebar.classList.remove('mobile-show');
+            }
+        });
+    </script>
+</body>
+</html>

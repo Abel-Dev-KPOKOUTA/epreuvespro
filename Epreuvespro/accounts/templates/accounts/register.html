@@ -1,0 +1,388 @@
+{% extends 'accounts/base_auth.html' %}
+
+{% block title %}Inscription - EpreuvesPro{% endblock %}
+
+{% block header %}
+    <h1 class="auth-title">Inscription</h1>
+    <p class="auth-subtitle">Créez votre compte gratuitement</p>
+{% endblock %}
+
+{% block content %}
+    <form method="post" id="register-form">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label class="form-label">{{ form.first_name.label }}</label>
+            {{ form.first_name }}
+            {% if form.first_name.errors %}
+                <small class="error-text">{{ form.first_name.errors.0 }}</small>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">{{ form.last_name.label }}</label>
+            {{ form.last_name }}
+            {% if form.last_name.errors %}
+                <small class="error-text">{{ form.last_name.errors.0 }}</small>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">{{ form.email.label }}</label>
+            {{ form.email }}
+            {% if form.email.errors %}
+                <small class="error-text">{{ form.email.errors.0 }}</small>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">{{ form.telephone.label }}</label>
+            {{ form.telephone }}
+            {% if form.telephone.errors %}
+                <small class="error-text">{{ form.telephone.errors.0 }}</small>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">{{ form.classe.label }}</label>
+            {{ form.classe }}
+            {% if form.classe.errors %}
+                <small class="error-text">{{ form.classe.errors.0 }}</small>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">{{ form.password1.label }}</label>
+            <div class="password-wrapper">
+                {{ form.password1 }}
+                <button type="button" class="password-toggle" onclick="togglePassword('register-password')">
+                    👁️
+                </button>
+            </div>
+            
+            <!-- Indicateur de force du mot de passe -->
+            <div class="password-strength-container" id="password-strength" style="display: none;">
+                <div class="password-strength-bar">
+                    <div class="password-strength-fill" id="strength-bar"></div>
+                </div>
+                <p class="password-strength-text" id="strength-text"></p>
+            </div>
+
+            <!-- Critères du mot de passe -->
+            <div class="password-requirements">
+                <p class="requirements-title">Le mot de passe doit contenir :</p>
+                <ul class="requirements-list">
+                    <li id="req-length" class="requirement">
+                        <span class="req-icon">○</span> Au moins 8 caractères
+                    </li>
+                    <li id="req-uppercase" class="requirement">
+                        <span class="req-icon">○</span> Une lettre majuscule
+                    </li>
+                    <li id="req-lowercase" class="requirement">
+                        <span class="req-icon">○</span> Une lettre minuscule
+                    </li>
+                    <li id="req-number" class="requirement">
+                        <span class="req-icon">○</span> Un chiffre
+                    </li>
+                    <li id="req-special" class="requirement">
+                        <span class="req-icon">○</span> Un caractère spécial (!@#$%^&*)
+                    </li>
+                </ul>
+            </div>
+
+            {% if form.password1.errors %}
+                <small class="error-text">{{ form.password1.errors.0 }}</small>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">{{ form.password2.label }}</label>
+            <div class="password-wrapper">
+                {{ form.password2 }}
+                <button type="button" class="password-toggle" onclick="togglePassword('confirm-password')">
+                    👁️
+                </button>
+            </div>
+            <div id="password-match-message" style="display: none;"></div>
+            {% if form.password2.errors %}
+                <small class="error-text">{{ form.password2.errors.0 }}</small>
+            {% endif %}
+        </div>
+
+        {% if form.errors %}
+            <div class="alert alert-error">
+                <span class="alert-icon">✕</span>
+                Veuillez corriger les erreurs ci-dessus
+            </div>
+        {% endif %}
+
+        <button type="submit" class="btn btn-primary" id="submit-btn" disabled>Créer mon compte</button>
+    </form>
+
+    <div class="auth-footer">
+        Déjà un compte? <a href="{% url 'accounts:login' %}" class="form-link">Se connecter</a>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<style>
+    .password-strength-container {
+        margin-top: 0.75rem;
+    }
+
+    .password-strength-bar {
+        height: 6px;
+        background: var(--gray-200);
+        border-radius: 3px;
+        overflow: hidden;
+        margin-bottom: 0.5rem;
+    }
+
+    .password-strength-fill {
+        height: 100%;
+        width: 0%;
+        transition: all 0.3s ease;
+        border-radius: 3px;
+    }
+
+    .password-strength-fill.weak {
+        width: 33%;
+        background: #ef4444;
+    }
+
+    .password-strength-fill.medium {
+        width: 66%;
+        background: #f59e0b;
+    }
+
+    .password-strength-fill.strong {
+        width: 100%;
+        background: #10b981;
+    }
+
+    .password-strength-text {
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .password-strength-text.weak {
+        color: #ef4444;
+    }
+
+    .password-strength-text.medium {
+        color: #f59e0b;
+    }
+
+    .password-strength-text.strong {
+        color: #10b981;
+    }
+
+    .password-requirements {
+        margin-top: 1rem;
+        padding: 1rem;
+        background: var(--gray-50);
+        border-radius: 8px;
+        border: 1px solid var(--gray-200);
+    }
+
+    .requirements-title {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--gray-700);
+        margin-bottom: 0.5rem;
+    }
+
+    .requirements-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .requirement {
+        font-size: 0.875rem;
+        color: var(--gray-600);
+        padding: 0.25rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: color 0.3s;
+    }
+
+    .requirement.valid {
+        color: var(--success);
+    }
+
+    .req-icon {
+        font-size: 1rem;
+        font-weight: bold;
+    }
+
+    .requirement.valid .req-icon {
+        color: var(--success);
+    }
+
+    .requirement.valid .req-icon::before {
+        content: '✓';
+    }
+
+    .error-text {
+        color: var(--danger);
+        font-size: 0.875rem;
+        display: block;
+        margin-top: 0.5rem;
+    }
+
+    #password-match-message {
+        margin-top: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        padding: 0.5rem;
+        border-radius: 6px;
+    }
+
+    #password-match-message.match {
+        color: var(--success);
+        background: #d1fae5;
+        border: 1px solid #a7f3d0;
+    }
+
+    #password-match-message.no-match {
+        color: var(--danger);
+        background: #fee2e2;
+        border: 1px solid #fecaca;
+    }
+</style>
+
+<script>
+    function togglePassword(inputId) {
+        const input = document.getElementById(inputId);
+        const button = input.parentElement.querySelector('.password-toggle');
+        
+        if (input.type === 'password') {
+            input.type = 'text';
+            button.textContent = '🙈';
+        } else {
+            input.type = 'password';
+            button.textContent = '👁️';
+        }
+    }
+
+    // Validation du mot de passe
+    const passwordInput = document.getElementById('register-password');
+    const confirmPasswordInput = document.getElementById('confirm-password');
+    const strengthBar = document.getElementById('strength-bar');
+    const strengthText = document.getElementById('strength-text');
+    const strengthContainer = document.getElementById('password-strength');
+    const submitBtn = document.getElementById('submit-btn');
+    const matchMessage = document.getElementById('password-match-message');
+
+    const requirements = {
+        length: { regex: /.{8,}/, element: document.getElementById('req-length') },
+        uppercase: { regex: /[A-Z]/, element: document.getElementById('req-uppercase') },
+        lowercase: { regex: /[a-z]/, element: document.getElementById('req-lowercase') },
+        number: { regex: /[0-9]/, element: document.getElementById('req-number') },
+        special: { regex: /[!@#$%^&*(),.?":{}|<>]/, element: document.getElementById('req-special') }
+    };
+
+    function checkPasswordStrength(password) {
+        let strength = 0;
+        let validRequirements = 0;
+
+        // Vérifier chaque critère
+        for (let key in requirements) {
+            if (requirements[key].regex.test(password)) {
+                strength++;
+                validRequirements++;
+                requirements[key].element.classList.add('valid');
+            } else {
+                requirements[key].element.classList.remove('valid');
+            }
+        }
+
+        // Afficher l'indicateur
+        if (password.length > 0) {
+            strengthContainer.style.display = 'block';
+            
+            // Déterminer la force
+            if (strength <= 2) {
+                strengthBar.className = 'password-strength-fill weak';
+                strengthText.className = 'password-strength-text weak';
+                strengthText.textContent = '🔴 Faible';
+            } else if (strength <= 4) {
+                strengthBar.className = 'password-strength-fill medium';
+                strengthText.className = 'password-strength-text medium';
+                strengthText.textContent = '🟡 Moyen';
+            } else {
+                strengthBar.className = 'password-strength-fill strong';
+                strengthText.className = 'password-strength-text strong';
+                strengthText.textContent = '🟢 Fort';
+            }
+        } else {
+            strengthContainer.style.display = 'none';
+        }
+
+        return validRequirements === 5;
+    }
+
+    function checkPasswordMatch() {
+        const password = passwordInput.value;
+        const confirmPassword = confirmPasswordInput.value;
+
+        if (confirmPassword.length > 0) {
+            if (password === confirmPassword) {
+                matchMessage.style.display = 'block';
+                matchMessage.className = 'match';
+                matchMessage.textContent = '✓ Les mots de passe correspondent';
+                return true;
+            } else {
+                matchMessage.style.display = 'block';
+                matchMessage.className = 'no-match';
+                matchMessage.textContent = '✕ Les mots de passe ne correspondent pas';
+                return false;
+            }
+        } else {
+            matchMessage.style.display = 'none';
+            return false;
+        }
+    }
+
+    function validateForm() {
+        const isPasswordStrong = checkPasswordStrength(passwordInput.value);
+        const doPasswordsMatch = checkPasswordMatch();
+        
+        // Activer le bouton seulement si tout est valide
+        if (isPasswordStrong && doPasswordsMatch && passwordInput.value.length > 0) {
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = '1';
+            submitBtn.style.cursor = 'pointer';
+        } else {
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = '0.5';
+            submitBtn.style.cursor = 'not-allowed';
+        }
+    }
+
+    // Événements
+    passwordInput.addEventListener('input', validateForm);
+    confirmPasswordInput.addEventListener('input', validateForm);
+
+    // Validation à la soumission
+    document.getElementById('register-form').addEventListener('submit', function(e) {
+        const isPasswordStrong = checkPasswordStrength(passwordInput.value);
+        const doPasswordsMatch = checkPasswordMatch();
+
+        if (!isPasswordStrong) {
+            e.preventDefault();
+            alert('⚠️ Votre mot de passe ne respecte pas tous les critères de sécurité.');
+            return false;
+        }
+
+        if (!doPasswordsMatch) {
+            e.preventDefault();
+            alert('⚠️ Les mots de passe ne correspondent pas.');
+            return false;
+        }
+    });
+</script>
+{% endblock %}

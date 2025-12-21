@@ -1,0 +1,66 @@
+{% extends 'accounts/base_auth.html' %}
+
+{% block title %}Connexion - EpreuvesPro{% endblock %}
+
+{% block header %}
+    <h1 class="auth-title">Connexion</h1>
+    <p class="auth-subtitle">Connectez-vous pour accéder à vos épreuves</p>
+{% endblock %}
+
+{% block content %}
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label class="form-label">{{ form.username.label }}</label>
+            {{ form.username }}
+            {% if form.username.errors %}
+                <small style="color: var(--danger);">{{ form.username.errors }}</small>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">{{ form.password.label }}</label>
+            <div class="password-wrapper">
+                {{ form.password }}
+                <button type="button" class="password-toggle" onclick="togglePassword('login-password')">
+                    👁️
+                </button>
+            </div>
+            {% if form.password.errors %}
+                <small style="color: var(--danger);">{{ form.password.errors }}</small>
+            {% endif %}
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <div class="form-check">
+                <input type="checkbox" id="remember" name="remember">
+                <label for="remember">Se souvenir</label>
+            </div>
+            <a href="#" class="form-link">Mot de passe oublié?</a>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Se connecter</button>
+    </form>
+
+    <div class="auth-footer">
+        Pas encore de compte? <a href="{% url 'accounts:register' %}" class="form-link">S'inscrire</a>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function togglePassword(inputId) {
+        const input = document.getElementById(inputId);
+        const button = input.nextElementSibling;
+        
+        if (input.type === 'password') {
+            input.type = 'text';
+            button.textContent = '🙈';
+        } else {
+            input.type = 'password';
+            button.textContent = '👁️';
+        }
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ epreuve.titre }} - EpreuvesPro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1e40af;
+            --primary-light: #3b82f6;
+            --primary-dark: #1e3a8a;
+            --secondary: #059669;
+            --accent: #d97706;
+            --dark: #0f172a;
+            --dark-light: #1e293b;
+            --light: #f8fafc;
+            --white: #FFFFFF;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --success: #059669;
+            --warning: #f59e0b;
+            --danger: #dc2626;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--gray-50);
+            color: var(--dark);
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ========== SIDEBAR ========== */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: var(--white);
+            border-right: 1px solid var(--gray-200);
+            padding: 2rem 0;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0 1.5rem;
+            margin-bottom: 2rem;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .logo-text {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0 1rem;
+        }
+
+        .menu-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem 1rem;
+            color: var(--gray-700);
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .menu-link:hover,
+        .menu-link.active {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .menu-icon {
+            font-size: 1.25rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .menu-divider {
+            margin: 1.5rem 1rem;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        /* ========== MAIN CONTENT ========== */
+        .main-content {
+            margin-left: 280px;
+            flex: 1;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: var(--white);
+            border-bottom: 1px solid var(--gray-200);
+            padding: 1.25rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-left h1 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .header-subtitle {
+            color: var(--gray-600);
+            font-size: 0.875rem;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 1rem;
+            background: var(--gray-100);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .user-menu:hover {
+            background: var(--gray-200);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .user-info h3 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .user-info p {
+            font-size: 0.75rem;
+            color: var(--gray-600);
+        }
+
+        /* Content */
+        .content {
+            padding: 2rem;
+        }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--gray-600);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        /* Main Grid */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        /* Main Content */
+        .main-content-section {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid var(--gray-200);
+        }
+
+        .epreuve-header {
+            margin-bottom: 2rem;
+        }
+
+        .badges {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            padding: 0.375rem 0.875rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-new { 
+            background: #dbeafe; 
+            color: var(--primary); 
+        }
+        
+        .badge-corrige { 
+            background: #d1fae5; 
+            color: var(--secondary); 
+        }
+        
+        .badge-gratuit { 
+            background: #d1fae5; 
+            color: var(--success); 
+        }
+        
+        .badge-popular { 
+            background: #fef3c7; 
+            color: var(--accent); 
+        }
+
+        .epreuve-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .epreuve-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid var(--gray-200);
+            margin-bottom: 2rem;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--gray-600);
+            font-weight: 500;
+        }
+
+        .meta-item strong {
+            color: var(--dark);
+        }
+
+        /* Description */
+        .description {
+            margin-bottom: 2rem;
+        }
+
+        .description h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+
+        .description p {
+            line-height: 1.6;
+            color: var(--gray-700);
+            margin-bottom: 1rem;
+        }
+
+        /* Content List */
+        .content-list {
+            background: var(--gray-50);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+        }
+
+        .content-list h3 {
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+
+        .content-list ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .content-list li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--gray-700);
+            font-size: 0.95rem;
+        }
+
+        .content-list li:last-child {
+            border-bottom: none;
+        }
+
+        /* Preview */
+        .preview-section {
+            margin-bottom: 2rem;
+        }
+
+        .preview-image {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .preview-note {
+            text-align: center;
+            color: var(--gray-600);
+            font-size: 0.875rem;
+        }
+
+        /* Features */
+        .features {
+            background: var(--gray-50);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+        }
+
+        .features h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            color: var(--gray-700);
+            font-size: 0.875rem;
+        }
+
+        .feature-item:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Sidebar */
+        .sidebar-section {
+            position: sticky;
+            top: 6rem;
+        }
+
+        .price-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 2px solid var(--gray-200);
+            margin-bottom: 1.5rem;
+        }
+
+        .price-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .price-label {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+            margin-bottom: 0.5rem;
+        }
+
+        .price-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .price-old {
+            text-decoration: line-through;
+            color: var(--gray-500);
+            font-size: 1rem;
+            margin-left: 0.5rem;
+        }
+
+        .savings {
+            display: inline-block;
+            background: #d1fae5;
+            color: var(--secondary);
+            padding: 0.375rem 0.875rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-top: 0.5rem;
+        }
+
+        /* Options */
+        .purchase-options {
+            margin-bottom: 1.5rem;
+        }
+
+        .option {
+            padding: 1rem;
+            border: 2px solid var(--gray-200);
+            border-radius: 12px;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .option:hover,
+        .option.selected {
+            border-color: var(--primary);
+            background: rgba(30, 64, 175, 0.05);
+        }
+
+        .option-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .option-title {
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 0.95rem;
+        }
+
+        .option-price {
+            font-weight: 800;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .price-free {
+            color: var(--success) !important;
+        }
+
+        .option-desc {
+            font-size: 0.8rem;
+            color: var(--gray-600);
+        }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 0.875rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            display: block;
+            text-decoration: none;
+            margin-bottom: 0.75rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: var(--white);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(30, 64, 175, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #10b981);
+            color: var(--white);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(5, 150, 105, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--gray-300);
+            color: var(--gray-700);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Stats */
+        .stats-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid var(--gray-200);
+            margin-bottom: 1.5rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--gray-600);
+        }
+
+        /* Alert */
+        .alert {
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            color: var(--primary);
+            border: 1px solid var(--primary-light);
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: var(--success);
+            border: 1px solid var(--secondary);
+        }
+
+        .alert-warning {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #f59e0b;
+        }
+
+        /* Access Status */
+        .access-status {
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .status-success {
+            background: #d1fae5;
+            color: var(--success);
+            border: 1px solid var(--secondary);
+        }
+
+        .status-warning {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #f59e0b;
+        }
+
+        /* Mobile Menu Button */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--dark);
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .mobile-menu-btn:hover {
+            background: var(--gray-100);
+        }
+
+        /* ========== RESPONSIVE DESIGN ========== */
+        
+        /* Tablettes (1024px et moins) */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+            }
+            
+            .sidebar.mobile-show {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .detail-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .sidebar-section {
+                position: static;
+                margin-top: 2rem;
+            }
+            
+            .content {
+                padding: 1.5rem;
+            }
+        }
+        
+        /* Grands mobiles (768px et moins) */
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .header-left {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            
+            .header-left h1 {
+                font-size: 1.5rem;
+            }
+            
+            .header-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .epreuve-title {
+                font-size: 1.5rem;
+            }
+            
+            .epreuve-meta {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+            
+            .main-content-section {
+                padding: 1.5rem;
+            }
+            
+            .preview-image {
+                height: 200px;
+                font-size: 2.5rem;
+            }
+            
+            .price-value {
+                font-size: 1.75rem;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .user-info {
+                display: none;
+            }
+        }
+        
+        /* Petits mobiles (480px et moins) */
+        @media (max-width: 480px) {
+            .sidebar {
+                width: 100%;
+            }
+            
+            .epreuve-title {
+                font-size: 1.25rem;
+            }
+            
+            .badge {
+                font-size: 0.7rem;
+                padding: 0.25rem 0.5rem;
+            }
+            
+            .main-content-section {
+                padding: 1rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+            
+            .content-list li {
+                font-size: 0.875rem;
+                padding: 0.5rem 0;
+            }
+            
+            .feature-item {
+                font-size: 0.8rem;
+            }
+            
+            .btn {
+                padding: 0.75rem;
+                font-size: 0.9rem;
+            }
+            
+            .option {
+                padding: 0.75rem;
+            }
+            
+            .option-title {
+                font-size: 0.875rem;
+            }
+            
+            .option-price {
+                font-size: 1rem;
+            }
+        }
+        
+        /* Très petits écrans (360px et moins) */
+        @media (max-width: 360px) {
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .header-left {
+                order: 2;
+            }
+            
+            .header-right {
+                order: 1;
+                justify-content: space-between;
+                margin-bottom: 0.5rem;
+            }
+            
+            .epreuve-meta {
+                font-size: 0.875rem;
+            }
+            
+            .meta-item {
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Messages */
+        .messages {
+            margin: 1rem 2rem;
+        }
+
+        .alert-message {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        .alert-message.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .alert-message.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .alert-message.info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar (identique au dashboard) -->
+    <aside class="sidebar" id="sidebar">
+        <a href="{% url 'core:accueil' %}" class="sidebar-logo">
+            <div class="logo-icon">EP</div>
+            <span class="logo-text">EpreuvesPro</span>
+        </a>
+
+        <ul class="sidebar-menu">
+            <li class="menu-item">
+                <a href="{% url 'dashboard:dashboard' %}" class="menu-link">
+                    <span class="menu-icon">🏠</span>
+                    <span>Tableau de bord</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="{% url 'dashboard:parcourir_epreuves' %}" class="menu-link">
+                    <span class="menu-icon">📚</span>
+                    <span>Parcourir Épreuves</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="#" class="menu-link">
+                    <span class="menu-icon">📖</span>
+                    <span>Bibliothèque</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="#" class="menu-link">
+                    <span class="menu-icon">📥</span>
+                    <span>Mes Téléchargements</span>
+                </a>
+            </li>
+
+            <div class="menu-divider"></div>
+
+            <li class="menu-item">
+                <a href="#" class="menu-link">
+                    <span class="menu-icon">💳</span>
+                    <span>Mon Abonnement</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="#" class="menu-link">
+                    <span class="menu-icon">👤</span>
+                    <span>Mon Profil</span>
+                </a>
+            </li>
+
+            <div class="menu-divider"></div>
+
+            <li class="menu-item">
+                <a href="{% url 'accounts:logout' %}" class="menu-link active">
+                    <span class="menu-icon">🚪</span>
+                    <span>Déconnexion</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header (identique au dashboard) -->
+        <header class="header">
+            <div class="header-left">
+                <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
+                <div>
+                    <h1>Détail de l'épreuve</h1>
+                    <p class="header-subtitle">Bienvenue {{ user.first_name }} !</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="user-menu">
+                    <div class="user-avatar">{{ user.first_name.0 }}{{ user.last_name.0 }}</div>
+                    <div class="user-info">
+                        <h3>{{ user.first_name }} {{ user.last_name }}</h3>
+                        <p>{{ user.get_classe_display }}</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Messages -->
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="alert-message {{ message.tags }}">
+                        <span>
+                            {% if message.tags == 'success' %}✓
+                            {% elif message.tags == 'error' %}✕
+                            {% else %}ℹ{% endif %}
+                        </span>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Breadcrumb -->
+            <div class="breadcrumb">
+                <a href="{% url 'dashboard:dashboard' %}">Tableau de bord</a>
+                <span>›</span>
+                <a href="{% url 'dashboard:parcourir_epreuves' %}">Épreuves</a>
+                <span>›</span>
+                <a href="{% url 'epreuves:liste_epreuves' epreuve.classe.nom %}">{{ epreuve.classe.get_nom_display }}</a>
+                <span>›</span>
+                <span>{{ epreuve.titre|truncatechars:30 }}</span>
+            </div>
+
+            <!-- Detail Grid -->
+            <div class="detail-grid">
+                <!-- Main Content -->
+                <div class="main-content-section">
+                    <!-- Header -->
+                    <div class="epreuve-header">
+                        <div class="badges">
+                            {% if epreuve.est_gratuit %}
+                            <span class="badge badge-gratuit">🆓 Gratuit</span>
+                            {% endif %}
+                            
+                            {% if epreuve.a_corrige %}
+                            <span class="badge badge-corrige">✅ Corrigé Disponible</span>
+                            {% endif %}
+                            
+                            {% if epreuve.nombre_telechargements > 100 %}
+                            <span class="badge badge-popular">🔥 Populaire</span>
+                            {% endif %}
+                        </div>
+
+                        <h1 class="epreuve-title">{{ epreuve.titre }}</h1>
+                        
+                        <div class="epreuve-meta">
+                            <span class="meta-item">📚 <strong>{{ epreuve.classe.get_nom_display }}</strong></span>
+                            <span class="meta-item">📖 <strong>{{ epreuve.matiere.nom }}</strong></span>
+                            
+                            {% if epreuve.categorie %}
+                            <span class="meta-item">📅 <strong>{{ epreuve.categorie.get_nom_display }}</strong></span>
+                            {% endif %}
+                            
+                            <span class="meta-item">🎓 <strong>{{ epreuve.annee_scolaire }}</strong></span>
+                            
+                            {% if epreuve.duree %}
+                            <span class="meta-item">⏱️ <strong>{{ epreuve.duree }} min</strong></span>
+                            {% endif %}
+                            
+                            <span class="meta-item">📄 <strong>{{ epreuve.nombre_pages }} pages</strong></span>
+                            <span class="meta-item">👁️ <strong>{{ epreuve.nombre_telechargements }} téléchargements</strong></span>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="description">
+                        <h2>📖 Description</h2>
+                        <p>
+                            Épreuve de <strong>{{ epreuve.matiere.nom }}</strong> pour la classe de <strong>{{ epreuve.classe.get_nom_display }}</strong>, 
+                            session de <strong>{{ epreuve.annee_scolaire }}</strong>.
+                        </p>
+                        
+                        {% if epreuve.a_corrige %}
+                        <p>
+                            Cette épreuve est accompagnée d'un <strong>corrigé détaillé</strong> réalisé par des professeurs expérimentés.
+                        </p>
+                        {% endif %}
+                        
+                        <p>
+                            Format PDF haute qualité, téléchargeable immédiatement après validation du paiement.
+                        </p>
+                    </div>
+
+                    <!-- Fichiers Disponibles -->
+                    <div class="content-list">
+                        <h3>📋 Fichiers disponibles</h3>
+                        <ul>
+                            <li>
+                                ✓ <strong>Épreuve :</strong> 
+                                {{ epreuve.titre }} 
+                                <small style="color: var(--gray-500);">
+                                    ({{ epreuve.nombre_pages }} page{{ epreuve.nombre_pages|pluralize }})
+                                </small>
+                            </li>
+                            
+                            {% if epreuve.a_corrige %}
+                            <li>
+                                ✓ <strong>Corrigé :</strong> 
+                                {{ epreuve.corrige.get_type_corrige_display }}
+                                {% if epreuve.corrige.auteur %}
+                                <small style="color: var(--gray-500);">
+                                    par {{ epreuve.corrige.auteur }}
+                                </small>
+                                {% endif %}
+                            </li>
+                            {% endif %}
+                            
+                            {% if epreuve.duree %}
+                            <li>✓ <strong>Durée :</strong> {{ epreuve.duree }} minutes</li>
+                            {% endif %}
+                            
+                            {% if epreuve.coefficient %}
+                            <li>✓ <strong>Coefficient :</strong> {{ epreuve.coefficient }}</li>
+                            {% endif %}
+                        </ul>
+                    </div>
+
+                    <!-- Preview Section -->
+                    <div class="preview-section">
+                        <h2>👁️ Aperçu</h2>
+                        <div class="preview-image">
+                            📄 {{ epreuve.matiere.icone|default:"📚" }}
+                        </div>
+                        <p class="preview-note">
+                            Aperçu de l'épreuve (fichier PDF) - {{ epreuve.nombre_pages }} page{{ epreuve.nombre_pages|pluralize }}
+                        </p>
+                    </div>
+
+                    <!-- Features -->
+                    <div class="features">
+                        <h3>✨ Ce qui est inclus</h3>
+                        <div class="feature-item">✓ Énoncé complet au format PDF haute qualité</div>
+                        
+                        {% if epreuve.a_corrige %}
+                        <div class="feature-item">✓ Corrigé détaillé avec explications pas à pas</div>
+                        {% endif %}
+                        
+                        <div class="feature-item">✓ Téléchargement immédiat après paiement</div>
+                        <div class="feature-item">✓ Accès illimité dans votre compte</div>
+                        <div class="feature-item">✓ Compatible mobile, tablette et ordinateur</div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="sidebar-section">
+                    <!-- Alert Abonné -->
+                    {% if via_abonnement %}
+                    <div class="alert alert-success">
+                        🎓 <strong>Abonnés :</strong> Vous avez accès à cette épreuve via votre abonnement
+                    </div>
+                    {% elif a_acces_epreuve and epreuve.est_gratuit %}
+                    <div class="alert alert-success">
+                        🆓 <strong>Gratuit :</strong> Cette épreuve est gratuite pour tous
+                    </div>
+                    {% elif a_acces_epreuve %}
+                    <div class="alert alert-success">
+                        ✅ <strong>Accès :</strong> Vous avez déjà accès à cette épreuve
+                    </div>
+                    {% endif %}
+
+                    <!-- Prix Card -->
+                    <div class="price-card">
+                        <div class="price-header">
+                            <div class="price-label">Prix</div>
+                            <div>
+                                {% if epreuve.est_gratuit %}
+                                <span class="price-value price-free">Gratuit</span>
+                                {% else %}
+                                <span class="price-value">{{ epreuve.prix_unitaire|floatformat:0 }} FCFA</span>
+                                {% if epreuve.a_corrige %}
+                                <span class="price-old">{{ epreuve.prix_unitaire|add:epreuve.corrige.prix_unitaire|floatformat:0 }} FCFA</span>
+                                {% endif %}
+                                {% endif %}
+                            </div>
+                            
+                            {% if epreuve.a_corrige and not epreuve.est_gratuit %}
+                            <span class="savings">💰 Économisez {{ epreuve.corrige.prix_unitaire|floatformat:0 }} FCFA</span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Options d'achat -->
+                        <div class="purchase-options">
+                            <!-- Option Pack (si corrigé disponible) -->
+                            {% if epreuve.a_corrige %}
+                            <div class="option {% if not selected_option or selected_option == 'pack' %}selected{% endif %}" 
+                                 data-option="pack" 
+                                 data-price="{{ epreuve.prix_unitaire|add:epreuve.corrige.prix_unitaire }}">
+                                <div class="option-header">
+                                    <span class="option-title">📦 Pack Complet</span>
+                                    <span class="option-price">
+                                        {% if epreuve.est_gratuit %}Gratuit{% else %}{{ epreuve.prix_unitaire|add:epreuve.corrige.prix_unitaire|floatformat:0 }} FCFA{% endif %}
+                                    </span>
+                                </div>
+                                <div class="option-desc">Épreuve + Corrigé détaillé</div>
+                            </div>
+                            {% endif %}
+
+                            <!-- Option Épreuve seule -->
+                            <div class="option {% if selected_option == 'epreuve' %}selected{% endif %}" 
+                                 data-option="epreuve" 
+                                 data-price="{{ epreuve.prix_unitaire }}">
+                                <div class="option-header">
+                                    <span class="option-title">📝 Épreuve seule</span>
+                                    <span class="option-price">
+                                        {% if epreuve.est_gratuit %}Gratuit{% else %}{{ epreuve.prix_unitaire|floatformat:0 }} FCFA{% endif %}
+                                    </span>
+                                </div>
+                                <div class="option-desc">Énoncé uniquement</div>
+                            </div>
+
+                            <!-- Option Corrigé seul -->
+                            {% if epreuve.a_corrige %}
+                            <div class="option {% if selected_option == 'corrige' %}selected{% endif %}" 
+                                 data-option="corrige" 
+                                 data-price="{{ epreuve.corrige.prix_unitaire }}">
+                                <div class="option-header">
+                                    <span class="option-title">✅ Corrigé seul</span>
+                                    <span class="option-price">
+                                        {% if epreuve.est_gratuit %}Gratuit{% else %}{{ epreuve.corrige.prix_unitaire|floatformat:0 }} FCFA{% endif %}
+                                    </span>
+                                </div>
+                                <div class="option-desc">Correction détaillée</div>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Boutons d'action -->
+                        {% if a_acces_epreuve or epreuve.est_gratuit %}
+                            <!-- Accès direct si déjà acheté/gratuit/abonné -->
+                            <a href="{% url 'epreuves:telecharger_epreuve' epreuve.slug %}" class="btn btn-success">
+                                📥 Télécharger l'épreuve
+                            </a>
+                            
+                            {% if epreuve.a_corrige and a_acces_corrige %}
+                            <a href="{% url 'epreuves:telecharger_corrige' epreuve.slug %}" class="btn btn-primary">
+                                📥 Télécharger le corrigé
+                            </a>
+                            {% endif %}
+                        {% else %}
+                            <!-- Achat nécessaire -->
+                            <form method="post" action="{% url 'epreuves:acheter_pack' epreuve.slug %}" id="purchase-form" style="display: none;">
+                                {% csrf_token %}
+                                <input type="hidden" name="option" id="selected-option" value="pack">
+                            </form>
+                            
+                            <button type="button" class="btn btn-primary" id="buy-btn" onclick="buyEpreuve()">
+                                💳 Acheter maintenant
+                            </button>
+                            
+                            {% if epreuve.disponible_abonnement %}
+                            <a href="#" class="btn btn-outline">
+                                🎓 S'abonner pour accéder à toutes les épreuves
+                            </a>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+
+                    <!-- Paiement sécurisé -->
+                    <div class="features" style="margin-bottom: 1.5rem;">
+                        <h3>🔒 Paiement sécurisé</h3>
+                        <div class="feature-item">✓ FedaPay / KKiaPay</div>
+                        <div class="feature-item">✓ Moov Money / MTN Mobile Money</div>
+                        <div class="feature-item">✓ Transaction cryptée SSL</div>
+                    </div>
+
+                    <!-- Statistiques -->
+                    <div class="stats-card">
+                        <div class="stats-grid">
+                            <div class="stat">
+                                <div class="stat-value">{{ epreuve.nombre_telechargements }}</div>
+                                <div class="stat-label">Téléchargements</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value">{{ epreuve.nombre_pages }}</div>
+                                <div class="stat-label">Pages</div>
+                            </div>
+                            {% if epreuve.duree %}
+                            <div class="stat">
+                                <div class="stat-value">{{ epreuve.duree }}</div>
+                                <div class="stat-label">Minutes</div>
+                            </div>
+                            {% endif %}
+                            {% if epreuve.coefficient %}
+                            <div class="stat">
+                                <div class="stat-value">{{ epreuve.coefficient }}</div>
+                                <div class="stat-label">Coefficient</div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Statut d'accès -->
+                    <div class="access-status {% if a_acces_epreuve %}status-success{% else %}status-warning{% endif %}">
+                        <strong>Votre statut d'accès :</strong><br>
+                        {% if epreuve.est_gratuit %}
+                        ✅ Cette épreuve est gratuite pour tous
+                        {% elif a_acces_epreuve and via_abonnement %}
+                        ✅ Accès via votre abonnement
+                        {% elif a_acces_epreuve %}
+                        ✅ Vous avez déjà acheté cette épreuve
+                        {% else %}
+                        🔒 Achat ou abonnement requis
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Option selection
+        document.querySelectorAll('.option').forEach(option => {
+            option.addEventListener('click', function() {
+                // Désélectionner toutes les options
+                document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+                
+                // Sélectionner cette option
+                this.classList.add('selected');
+                
+                // Mettre à jour le formulaire d'achat
+                const selectedOption = this.dataset.option;
+                document.getElementById('selected-option').value = selectedOption;
+                
+                // Mettre à jour le formulaire d'action
+                const form = document.getElementById('purchase-form');
+                if (selectedOption === 'epreuve') {
+                    form.action = "{% url 'epreuves:acheter_epreuve' epreuve.slug %}";
+                } else if (selectedOption === 'corrige') {
+                    form.action = "{% url 'epreuves:acheter_corrige' epreuve.slug %}";
+                } else {
+                    form.action = "{% url 'epreuves:acheter_pack' epreuve.slug %}";
+                }
+            });
+        });
+
+        // Fonction d'achat
+        function buyEpreuve() {
+            // Si pas d'option sélectionnée, sélectionner la première
+            if (!document.querySelector('.option.selected')) {
+                document.querySelector('.option').click();
+            }
+            
+            // Soumettre le formulaire
+            document.getElementById('purchase-form').submit();
+        }
+
+        // Auto-sélectionner la première option
+        document.addEventListener('DOMContentLoaded', function() {
+            const firstOption = document.querySelector('.option');
+            if (firstOption) {
+                firstOption.click();
+            }
+        });
+
+        // Toggle sidebar pour mobile
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('mobile-show');
+        }
+
+        // Fermer le sidebar quand on clique en dehors (mobile)
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const menuBtn = document.querySelector('.mobile-menu-btn');
+            
+            if (window.innerWidth <= 1024) {
+                if (!sidebar.contains(event.target) && !menuBtn.contains(event.target)) {
+                    sidebar.classList.remove('mobile-show');
+                }
+            }
+        });
+
+        // Ajuster la hauteur du sidebar pour éviter le débordement
+        window.addEventListener('resize', function() {
+            const sidebar = document.getElementById('sidebar');
+            if (window.innerWidth > 1024) {
+                sidebar.classList.remove('mobile-show');
+            }
+        });
+    </script>
+</body>
+</html>
