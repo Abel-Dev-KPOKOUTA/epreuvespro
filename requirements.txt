@@ -6,12 +6,12 @@ django-environ==0.11.2
 psycopg2-binary==2.9.9
 dj-database-url==2.1.0
 
-# Images - VERSION MISE À JOUR ✅
-Pillow==10.4.0  # ← CHANGE ICI (au lieu de 10.2.0)
+# Images
+Pillow==10.4.0
 
 # Forms & Validation
 django-crispy-forms==2.1
-crispy-bootstrap4==2.0
+crispy-bootstrap4==2024.10
 
 # API & Requests
 requests==2.31.0
@@ -27,6 +27,3 @@ pytz==2024.1
 # Production Server
 gunicorn==21.2.0
 whitenoise==6.6.0
-
-# Development (optionnel en production)
-django-debug-toolbar==4.2.0
