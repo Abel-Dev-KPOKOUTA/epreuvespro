@@ -10,7 +10,7 @@ dj-database-url==2.1.0
 Pillow==10.4.0
 
 # Forms & Validation
-django-crispy-forms==2.1
+django-crispy-forms==2.3
 crispy-bootstrap4==2024.10
 
 # API & Requests
