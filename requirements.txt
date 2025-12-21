@@ -3,11 +3,11 @@ Django==5.0.1
 django-environ==0.11.2
 
 # Database
-psycopg2-binary==2.9.9  # PostgreSQL adapter
+psycopg2-binary==2.9.9
 dj-database-url==2.1.0
 
-# Images
-Pillow==10.2.0
+# Images - VERSION MISE À JOUR ✅
+Pillow==10.4.0  # ← CHANGE ICI (au lieu de 10.2.0)
 
 # Forms & Validation
 django-crispy-forms==2.1
@@ -28,12 +28,5 @@ pytz==2024.1
 gunicorn==21.2.0
 whitenoise==6.6.0
 
-# Development
+# Development (optionnel en production)
 django-debug-toolbar==4.2.0
-black==24.1.1
-flake8==7.0.0
-
-# Testing
-pytest==7.4.4
-pytest-django==4.7.0
-coverage==7.4.0
