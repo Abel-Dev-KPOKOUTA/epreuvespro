@@ -9,4 +9,7 @@ urlpatterns = [
     path('bibliotheque/', views.bibliotheque, name='bibliotheque'),
     path('mes-telechargements/', views.mes_telechargements, name='mes_telechargements'),
     path('mon-abonnement/', views.mon_abonnement, name='mon_abonnement'),
+    path('souscrire/<str:plan_slug>/', views.souscrire_abonnement, name='souscrire_abonnement'),
+    path('paiement/<str:plan_slug>/', views.traiter_paiement_abonnement, name='traiter_paiement_abonnement'), 
+    path('paiement/callback/', views.callback_paiement, name='callback_paiement'),
 ]

@@ -27,3 +27,4 @@ pytz==2024.1
 # Production Server
 gunicorn==21.2.0
 whitenoise==6.6.0
+fedapay==0.3.0

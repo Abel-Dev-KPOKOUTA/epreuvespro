@@ -50,4 +50,5 @@ urlpatterns = [
     
     # Paiement
     path('paiement/<slug:slug>/<str:type_achat>/', views.paiement_unitaire, name='paiement_unitaire'),
+    path('callback/paiement/', views.callback_paiement_unitaire, name='callback_paiement_unitaire'),  # ← Nouveau
 ]

@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Q
 from datetime import datetime, timedelta
@@ -11,6 +11,11 @@ from epreuves.models import Epreuve, Classe, Matiere, CategorieEpreuve
 from abonnements.models import AchatUnitaire
 
 from abonnements.models import PlanAbonnement
+
+from django.shortcuts import get_object_or_404
+from django.contrib import messages
+
+from datetime import datetime, timedelta
 
 @login_required
 def dashboard_view(request):
@@ -361,3 +366,229 @@ def mon_abonnement(request):
     }
     
     return render(request, 'dashboard/mon_abonnement.html', context)
+
+
+@login_required
+def souscrire_abonnement(request, plan_slug):
+    """Page de souscription à un abonnement"""
+    from abonnements.models import PlanAbonnement
+    
+    plan = get_object_or_404(PlanAbonnement, type_plan=plan_slug, est_actif=True)
+    
+    # Vérifier si l'utilisateur a déjà un abonnement actif
+    abonnement_actuel = None
+    try:
+        abonnement_actuel = Abonnement.objects.get(user=request.user, est_actif=True)
+    except Abonnement.DoesNotExist:
+        pass
+    
+    context = {
+        'plan': plan,
+        'abonnement_actuel': abonnement_actuel,
+    }
+    
+    return render(request, 'dashboard/souscrire_abonnement.html', context)
+
+
+@login_required
+def traiter_paiement_abonnement(request, plan_slug):
+    """Traiter le paiement d'un abonnement"""
+    if request.method != 'POST':
+        return redirect('dashboard:souscrire_abonnement', plan_slug=plan_slug)
+    
+    from abonnements.models import PlanAbonnement, Paiement
+    from abonnements.services.fedapay_service import FedaPayService
+    import uuid
+    
+    plan = get_object_or_404(PlanAbonnement, type_plan=plan_slug, est_actif=True)
+    user = request.user
+    
+    # Récupérer les données du formulaire
+    methode_paiement = request.POST.get('methode_paiement', 'fedapay')
+    phone = request.POST.get('phone')
+    renouvellement_auto = request.POST.get('renouvellement_auto') == 'on'
+    
+    # Validation
+    if not phone:
+        messages.error(request, "❌ Veuillez entrer votre numéro de téléphone.")
+        return redirect('dashboard:souscrire_abonnement', plan_slug=plan_slug)
+    
+    # Générer une référence unique
+    reference = f"ABO-{uuid.uuid4().hex[:10].upper()}"
+    
+    # Créer l'enregistrement de paiement
+    paiement = Paiement.objects.create(
+        user=user,
+        montant=plan.prix,
+        methode=methode_paiement,
+        reference=reference,
+        statut='en_attente',
+        description=f"Abonnement {plan.nom}"
+    )
+    
+    # Si c'est gratuit, activer directement
+    if plan.prix == 0:
+        paiement.statut = 'valide'
+        paiement.save()
+        
+        # Créer l'abonnement
+        from datetime import datetime, timedelta
+        from django.utils import timezone
+        
+        # Désactiver l'ancien abonnement si existe
+        Abonnement.objects.filter(user=user, est_actif=True).update(est_actif=False)
+        
+        # Créer le nouvel abonnement
+        if plan.type_plan == 'mensuel':
+            duree_jours = 30
+        elif plan.type_plan == 'annuel':
+            duree_jours = 365
+        else:  # gratuit
+            duree_jours = 30
+        
+        date_fin = timezone.now() + timedelta(days=duree_jours)
+        
+        Abonnement.objects.create(
+            user=user,
+            plan=plan,
+            date_fin=date_fin,
+            est_actif=True,
+            renouvellement_auto=renouvellement_auto
+        )
+        
+        messages.success(request, "🎉 Votre abonnement gratuit a été activé avec succès !")
+        return redirect('dashboard:mon_abonnement')
+    
+    # Pour les plans payants, initier le paiement FedaPay
+    if methode_paiement == 'fedapay':
+        fedapay_service = FedaPayService()
+        
+        # Créer la transaction FedaPay
+        result = fedapay_service.creer_transaction(
+            montant=plan.prix,
+            description=f"Abonnement {plan.nom} - EpreuvesPro",
+            customer_email=user.email,
+            customer_firstname=user.first_name or "Utilisateur",
+            customer_lastname=user.last_name or "EpreuvesPro",
+            customer_phone=phone,
+            callback_url=request.build_absolute_uri('/dashboard/paiement/callback/')
+        )
+        
+        if result['success']:
+            # Sauvegarder l'ID de transaction
+            paiement.transaction_id = result['transaction_id']
+            paiement.save()
+            
+            # Stocker les infos dans la session
+            request.session['paiement_id'] = paiement.id
+            request.session['plan_slug'] = plan_slug
+            request.session['renouvellement_auto'] = renouvellement_auto
+            
+            # Rediriger vers la page de paiement FedaPay
+            return redirect(result['url'])
+        else:
+            paiement.statut = 'echoue'
+            paiement.save()
+            messages.error(request, f"❌ Erreur lors de l'initialisation du paiement : {result.get('error')}")
+            return redirect('dashboard:souscrire_abonnement', plan_slug=plan_slug)
+    
+    else:
+        messages.warning(request, "⚠️ Cette méthode de paiement n'est pas encore disponible.")
+        return redirect('dashboard:souscrire_abonnement', plan_slug=plan_slug)
+
+
+@login_required
+def callback_paiement(request):
+    """Callback après paiement FedaPay"""
+    from abonnements.models import Paiement
+    from abonnements.services.fedapay_service import FedaPayService
+    from datetime import timedelta
+    from django.utils import timezone
+    
+    # Récupérer les paramètres
+    transaction_id = request.GET.get('id')  # FedaPay renvoie 'id'
+    status = request.GET.get('status')
+    
+    if not transaction_id:
+        messages.error(request, "❌ Erreur : Transaction introuvable.")
+        return redirect('dashboard:mon_abonnement')
+    
+    # Récupérer le paiement depuis la session ou la DB
+    paiement_id = request.session.get('paiement_id')
+    
+    try:
+        paiement = Paiement.objects.get(id=paiement_id, transaction_id=transaction_id)
+    except Paiement.DoesNotExist:
+        # Essayer de retrouver via transaction_id
+        try:
+            paiement = Paiement.objects.get(transaction_id=transaction_id)
+        except Paiement.DoesNotExist:
+            messages.error(request, "❌ Paiement introuvable.")
+            return redirect('dashboard:mon_abonnement')
+    
+    # Vérifier le statut auprès de FedaPay
+    fedapay_service = FedaPayService()
+    result = fedapay_service.verifier_transaction(transaction_id)
+    
+    if not result['success']:
+        messages.error(request, f"❌ Erreur lors de la vérification : {result.get('error')}")
+        return redirect('dashboard:mon_abonnement')
+    
+    # Mettre à jour le paiement
+    if result['status'] == 'approved':
+        paiement.statut = 'valide'
+        paiement.date_validation = timezone.now()
+        paiement.save()
+        
+        # Créer l'abonnement
+        plan_slug = request.session.get('plan_slug')
+        renouvellement_auto = request.session.get('renouvellement_auto', False)
+        
+        from abonnements.models import PlanAbonnement
+        plan = PlanAbonnement.objects.get(type_plan=plan_slug)
+        
+        # Désactiver l'ancien abonnement
+        Abonnement.objects.filter(user=paiement.user, est_actif=True).update(est_actif=False)
+        
+        # Calculer la date de fin
+        if plan.type_plan == 'mensuel':
+            duree_jours = 30
+        elif plan.type_plan == 'annuel':
+            duree_jours = 365
+        else:
+            duree_jours = 30
+        
+        date_fin = timezone.now() + timedelta(days=duree_jours)
+        
+        # Créer le nouvel abonnement
+        Abonnement.objects.create(
+            user=paiement.user,
+            plan=plan,
+            date_fin=date_fin,
+            est_actif=True,
+            renouvellement_auto=renouvellement_auto
+        )
+        
+        # Nettoyer la session
+        request.session.pop('paiement_id', None)
+        request.session.pop('plan_slug', None)
+        request.session.pop('renouvellement_auto', None)
+        
+        messages.success(request, f"🎉 Paiement de {paiement.montant} FCFA réussi ! Votre abonnement {plan.nom} est maintenant actif.")
+        return redirect('dashboard:mon_abonnement')
+    
+    elif result['status'] == 'declined':
+        paiement.statut = 'echoue'
+        paiement.save()
+        messages.error(request, "❌ Le paiement a été refusé. Veuillez réessayer.")
+        return redirect('dashboard:mon_abonnement')
+    
+    elif result['status'] == 'canceled':
+        paiement.statut = 'echoue'
+        paiement.save()
+        messages.warning(request, "⚠️ Le paiement a été annulé.")
+        return redirect('dashboard:mon_abonnement')
+    
+    else:  # pending
+        messages.info(request, "⏳ Paiement en cours de traitement. Nous vous notifierons dès confirmation.")
+        return redirect('dashboard:mon_abonnement')

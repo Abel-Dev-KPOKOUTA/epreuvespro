@@ -241,3 +241,8 @@ class Telechargement(models.Model):
     
     def __str__(self):
         return f"{self.user.email} - {self.get_type_contenu_display()} - {self.objet_nom}"
+    
+
+
+
+

@@ -24,6 +24,7 @@
             --success: #059669;
             --warning: #f59e0b;
             --danger: #dc2626;
+            --gold: #d97706;
         }
 
         * {
@@ -39,7 +40,7 @@
             line-height: 1.6;
         }
 
-        /* Sidebar */
+        /* Sidebar - Même style */
         .sidebar {
             position: fixed;
             left: 0;
@@ -239,6 +240,12 @@
             height: 8px;
             border-radius: 50%;
             background: #10b981;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
 
         .subscription-details {
@@ -375,7 +382,7 @@
             box-shadow: 0 10px 20px rgba(30, 64, 175, 0.3);
         }
 
-        /* Plans Comparison */
+        /* Plans Section */
         .section-title {
             font-size: 1.5rem;
             font-weight: 700;
@@ -385,15 +392,15 @@
 
         .plans-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
             margin-bottom: 2rem;
         }
 
         .plan-card {
             background: var(--white);
-            border-radius: 16px;
-            padding: 2rem;
+            border-radius: 20px;
+            padding: 2.5rem;
             border: 2px solid var(--gray-200);
             transition: all 0.3s;
             position: relative;
@@ -408,13 +415,18 @@
         .plan-card.recommended {
             border-color: var(--primary);
             box-shadow: 0 10px 30px rgba(30, 64, 175, 0.2);
+            transform: scale(1.05);
+        }
+
+        .plan-card.recommended:hover {
+            transform: scale(1.05) translateY(-8px);
         }
 
         .recommended-badge {
             position: absolute;
             top: -12px;
             right: 20px;
-            background: linear-gradient(135deg, var(--accent), #f59e0b);
+            background: linear-gradient(135deg, var(--gold), #f59e0b);
             color: var(--white);
             padding: 0.375rem 1rem;
             border-radius: 20px;
@@ -473,6 +485,10 @@
             font-weight: 700;
         }
 
+        .feature-icon.disabled {
+            color: var(--gray-300);
+        }
+
         .btn-plan {
             width: 100%;
             padding: 1rem;
@@ -481,6 +497,8 @@
             text-align: center;
             cursor: pointer;
             transition: all 0.3s;
+            text-decoration: none;
+            display: block;
         }
 
         .btn-upgrade {
@@ -500,7 +518,40 @@
             cursor: not-allowed;
         }
 
-        /* Payment History */
+        .savings-badge {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 0.375rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: inline-block;
+            margin-top: 0.5rem;
+        }
+
+        /* Alert */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .alert-warning {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fbbf24;
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #60a5fa;
+        }
+
+        /* History Section */
         .history-section {
             background: var(--white);
             border-radius: 16px;
@@ -551,39 +602,7 @@
             color: #065f46;
         }
 
-        .status-en-attente {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        .status-echoue {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        /* Alert */
-        .alert {
-            padding: 1rem 1.5rem;
-            border-radius: 10px;
-            margin-bottom: 2rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .alert-warning {
-            background: #fef3c7;
-            color: #92400e;
-            border: 1px solid #fbbf24;
-        }
-
-        .alert-info {
-            background: #dbeafe;
-            color: #1e40af;
-            border: 1px solid #60a5fa;
-        }
-
-        /* Mobile Menu Button */
+        /* Mobile */
         .mobile-menu-btn {
             display: none;
             background: none;
@@ -620,6 +639,10 @@
             .plans-grid {
                 grid-template-columns: 1fr;
             }
+
+            .plan-card.recommended {
+                transform: scale(1);
+            }
         }
 
         @media (max-width: 768px) {
@@ -646,29 +669,6 @@
 
             .user-info {
                 display: none;
-            }
-
-            .history-table {
-                font-size: 0.75rem;
-            }
-
-            .history-table th,
-            .history-table td {
-                padding: 0.5rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .current-subscription h2 {
-                font-size: 1.5rem;
-            }
-
-            .detail-item p {
-                font-size: 1.25rem;
-            }
-
-            .plan-price {
-                font-size: 2rem;
             }
         }
     </style>
@@ -741,7 +741,7 @@
                 <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
                 <div>
                     <h1>💳 Mon Abonnement</h1>
-                    <p class="header-subtitle">Gérez votre abonnement et accédez à toutes les épreuves</p>
+                    <p class="header-subtitle">Gérez votre abonnement EpreuvesPro</p>
                 </div>
             </div>
             <div class="header-right">
@@ -761,7 +761,7 @@
             <!-- Current Subscription Card -->
             <div class="current-subscription">
                 <div class="subscription-header">
-                    <div class="plan-badge">{{ abonnement.plan.nom }}</div>
+                    <div class="plan-badge">Plan {{ abonnement.plan.nom }}</div>
                     <div class="subscription-status">
                         <span class="status-dot"></span>
                         Actif
@@ -769,7 +769,7 @@
                 </div>
 
                 <div class="subscription-details">
-                    <h2>Votre Abonnement {{ abonnement.plan.nom }}</h2>
+                    <h2>Abonnement {{ abonnement.plan.nom }}</h2>
                     
                     <div class="detail-grid">
                         <div class="detail-item">
@@ -777,7 +777,7 @@
                             <p>{{ stats.telechargements_utilises }} / {% if abonnement.plan.limite_telechargements == 0 %}∞{% else %}{{ stats.limite_telechargements }}{% endif %}</p>
                         </div>
                         <div class="detail-item">
-                            <h4>Téléchargements restants</h4>
+                            <h4>Restants ce mois</h4>
                             <p>{{ stats.telechargements_restants }}</p>
                         </div>
                         <div class="detail-item">
@@ -785,7 +785,7 @@
                             <p>{{ stats.jours_restants }} jours</p>
                         </div>
                         <div class="detail-item">
-                            <h4>Date de renouvellement</h4>
+                            <h4>Renouvellement</h4>
                             <p style="font-size: 1.25rem;">{{ stats.date_renouvellement|date:"d/m/Y" }}</p>
                         </div>
                     </div>
@@ -803,32 +803,35 @@
                     {% endif %}
 
                     <div class="subscription-actions">
-                        <a href="#plans" class="btn btn-white">Upgrader mon plan</a>
-                        {% if not abonnement.renouvellement_auto %}
-                        <a href="#" class="btn btn-outline-white">Activer le renouvellement auto</a>
+                        {% if abonnement.plan.type_plan != 'annuel' %}
+                        <a href="#plans" class="btn btn-white">📈 Upgrader vers Annuel</a>
                         {% endif %}
+                        <a href="#" class="btn btn-outline-white">🔄 Gérer le renouvellement</a>
                     </div>
                 </div>
             </div>
 
-            <!-- Warning if low usage -->
-            {% if stats.telechargements_restants != '∞' and stats.telechargements_restants < 5 %}
+            <!-- Alerts -->
+            {% if stats.telechargements_restants != '∞' and stats.telechargements_restants < 10 %}
             <div class="alert alert-warning">
                 <span style="font-size: 1.5rem;">⚠️</span>
                 <div>
                     <strong>Attention !</strong> Il ne vous reste que {{ stats.telechargements_restants }} téléchargement{{ stats.telechargements_restants|pluralize }}.
-                    Pensez à upgrader votre plan pour ne pas être bloqué.
+                    {% if abonnement.plan.type_plan == 'gratuit' %}
+                    <a href="#plans" style="text-decoration: underline; font-weight: 600;">Passez à un plan payant</a> pour continuer.
+                    {% else %}
+                    Votre quota se renouvelle le {{ stats.date_renouvellement|date:"d/m/Y" }}.
+                    {% endif %}
                 </div>
             </div>
             {% endif %}
 
-            <!-- Warning if expiring soon -->
-            {% if stats.jours_restants < 7 %}
+            {% if stats.jours_restants <= 7 %}
             <div class="alert alert-warning">
                 <span style="font-size: 1.5rem;">⏰</span>
                 <div>
                     <strong>Renouvellement proche !</strong> Votre abonnement expire dans {{ stats.jours_restants }} jour{{ stats.jours_restants|pluralize }}.
-                    N'oubliez pas de le renouveler.
+                    Pensez à le renouveler pour ne pas perdre l'accès.
                 </div>
             </div>
             {% endif %}
@@ -843,14 +846,18 @@
             </div>
             {% endif %}
 
-            <!-- Plans Comparison -->
+            <!-- Plans Section -->
             <div id="plans">
                 <h2 class="section-title">📋 Nos Plans d'Abonnement</h2>
                 <div class="plans-grid">
                     {% for plan in plans %}
-                    <div class="plan-card {% if plan.type_plan == 'annuel' %}recommended{% endif %}">
-                        {% if plan.type_plan == 'annuel' %}
-                        <div class="recommended-badge">⭐ Recommandé</div>
+                    <div class="plan-card {% if plan.type_plan == 'mensuel' %}recommended{% endif %}">
+                        {% if plan.type_plan == 'mensuel' %}
+                        <div class="recommended-badge">⭐ RECOMMANDÉ</div>
+                        {% elif plan.type_plan == 'annuel' %}
+                        <div class="recommended-badge">💎 MEILLEURE OFFRE</div>
+                        {% elif plan.type_plan == 'gratuit' %}
+                        <div class="recommended-badge">🎁 DÉCOUVERTE</div>
                         {% endif %}
 
                         <div class="plan-header">
@@ -859,7 +866,7 @@
                                 {% if plan.prix == 0 %}
                                 Gratuit
                                 {% else %}
-                                <span class="plan-price-small">{{ plan.prix|floatformat:0 }} FCFA</span>
+                                {{ plan.prix|floatformat:0 }} <span class="plan-price-small">FCFA</span>
                                 {% endif %}
                             </div>
                             <p class="plan-duration">
@@ -867,6 +874,9 @@
                                 {% elif plan.type_plan == 'annuel' %}par an
                                 {% endif %}
                             </p>
+                            {% if plan.type_plan == 'annuel' %}
+                            <span class="savings-badge">💰 Économisez 10 000 FCFA</span>
+                            {% endif %}
                         </div>
 
                         <ul class="plan-features">
@@ -875,44 +885,56 @@
                                 {% if plan.limite_telechargements == 0 %}
                                 Téléchargements illimités
                                 {% else %}
-                                {{ plan.limite_telechargements }} téléchargements/mois
+                                {{ plan.limite_telechargements }} téléchargement{{ plan.limite_telechargements|pluralize }} / mois
                                 {% endif %}
                             </li>
                             <li>
-                                <span class="feature-icon">✓</span>
-                                Accès à toutes les épreuves
+                                <span class="feature-icon {% if plan.type_plan == 'gratuit' %}disabled{% endif %}">{% if plan.type_plan == 'gratuit' %}✗{% else %}✓{% endif %}</span>
+                                {% if plan.type_plan == 'gratuit' %}Aperçu des corrigés{% else %}Tous les corrigés détaillés{% endif %}
                             </li>
                             <li>
-                                <span class="feature-icon">✓</span>
-                                Corrigés détaillés inclus
+                                <span class="feature-icon {% if plan.type_plan == 'gratuit' %}disabled{% endif %}">{% if plan.type_plan == 'gratuit' %}✗{% else %}✓{% endif %}</span>
+                                {% if plan.type_plan == 'gratuit' %}Accès limité aux ressources{% else %}Bibliothèque complète{% endif %}
                             </li>
                             <li>
-                                <span class="feature-icon">✓</span>
-                                Support prioritaire
+                                <span class="feature-icon {% if plan.type_plan == 'gratuit' %}disabled{% endif %}">{% if plan.type_plan == 'gratuit' %}✗{% else %}✓{% endif %}</span>
+                                Support {% if plan.type_plan == 'annuel' %}prioritaire 24/7{% elif plan.type_plan == 'mensuel' %}standard{% else %}communautaire{% endif %}
                             </li>
                             {% if plan.type_plan == 'annuel' %}
                             <li>
                                 <span class="feature-icon">✓</span>
-                                2 mois offerts
+                                Réduction de 20% sur achats
+                            </li>
+                            <li>
+                                <span class="feature-icon">✓</span>
+                                Accès VIP anticipé
                             </li>
                             {% endif %}
                         </ul>
 
                         {% if abonnement and abonnement.plan == plan %}
                         <button class="btn btn-plan btn-current" disabled>
-                            Plan actuel
+                            ✓ Plan actuel
                         </button>
                         {% else %}
-                        <a href="#" class="btn btn-plan btn-upgrade">
+                        <a href="{% url 'dashboard:souscrire_abonnement' plan.type_plan %}" class="btn btn-plan btn-upgrade">
                             {% if plan.prix == 0 %}
-                            Choisir ce plan
+                            🎁 Activer gratuitement
                             {% else %}
-                            Souscrire maintenant
+                            💳 Souscrire maintenant
                             {% endif %}
                         </a>
                         {% endif %}
                     </div>
                     {% endfor %}
+                </div>
+
+                <div class="alert alert-info" style="text-align: center;">
+                    <span style="font-size: 1.5rem;">💡</span>
+                    <div>
+                        <strong>Option flexible :</strong> Vous pouvez aussi acheter des épreuves et corrigés à l'unité (25-75 FCFA) sans abonnement.
+                        <a href="{% url 'dashboard:parcourir_epreuves' %}" style="text-decoration: underline; font-weight: 600;">Parcourir les épreuves</a>
+                    </div>
                 </div>
             </div>
 
@@ -928,54 +950,19 @@
                             <th>Montant</th>
                             <th>Méthode</th>
                             <th>Statut</th>
-                            <th>Référence</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for paiement in paiements %}
                         <tr>
-                            <td>{{ paiement.date_paiement|date:"d/m/Y" }}</td>
-                            <td>{{ paiement.description|default:"Abonnement" }}</td>
+                            <td>{{ paiement.date_paiement|date:"d/m/Y à H:i" }}</td>
+                            <td>{{ paiement.description|default:"Abonnement"|truncatechars:40 }}</td>
                             <td><strong>{{ paiement.montant|floatformat:0 }} FCFA</strong></td>
                             <td>{{ paiement.get_methode_display }}</td>
                             <td>
                                 <span class="status-badge status-{{ paiement.statut }}">
                                     {{ paiement.get_statut_display }}
                                 </span>
-                            </td>
-                            <td style="font-family: monospace; font-size: 0.75rem;">{{ paiement.reference }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            {% endif %}
-
-            <!-- Subscription History -->
-            {% if historique_abonnements %}
-            <div class="history-section">
-                <h2 class="section-title">🕒 Historique des Abonnements</h2>
-                <table class="history-table">
-                    <thead>
-                        <tr>
-                            <th>Plan</th>
-                            <th>Date début</th>
-                            <th>Date fin</th>
-                            <th>Statut</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for ancien_abonnement in historique_abonnements %}
-                        <tr>
-                            <td><strong>{{ ancien_abonnement.plan.nom }}</strong></td>
-                            <td>{{ ancien_abonnement.date_debut|date:"d/m/Y" }}</td>
-                            <td>{{ ancien_abonnement.date_fin|date:"d/m/Y" }}</td>
-                            <td>
-                                {% if ancien_abonnement.est_actif %}
-                                <span class="status-badge status-valide">Actif</span>
-                                {% else %}
-                                <span class="status-badge status-echoue">Expiré</span>
-                                {% endif %}
                             </td>
                         </tr>
                         {% endfor %}
@@ -991,7 +978,6 @@
             document.getElementById('sidebar').classList.toggle('mobile-show');
         }
 
-        // Fermer le sidebar en cliquant en dehors (mobile)
         document.addEventListener('click', function(event) {
             const sidebar = document.getElementById('sidebar');
             const menuBtn = document.querySelector('.mobile-menu-btn');
@@ -1003,7 +989,6 @@
             }
         });
 
-        // Gérer le resize
         window.addEventListener('resize', function() {
             const sidebar = document.getElementById('sidebar');
             if (window.innerWidth > 1024) {
@@ -1011,7 +996,7 @@
             }
         });
 
-        // Smooth scroll vers les plans
+        // Smooth scroll
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();

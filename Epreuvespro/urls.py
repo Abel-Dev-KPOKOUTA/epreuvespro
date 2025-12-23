@@ -10,7 +10,7 @@ urlpatterns = [
     path('accounts/', include('accounts.urls', namespace='accounts')),
     path('abonnements/', include('abonnements.urls', namespace='abonnements')),
     path('dashboard/', include('dashboard.urls', namespace='dashboard')),  
-    path('core/', include('core.urls', namespace='core')),   
+    path('', include('core.urls', namespace='core')),   
 ]
 
 #urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

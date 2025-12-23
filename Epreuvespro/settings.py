@@ -147,3 +147,10 @@ STATICFILES_FINDERS = [
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# settings.py
+
+# FedaPay Configuration
+FEDAPAY_PUBLIC_KEY = 'pk_live_VwZZD1WOH5fVfETOw7yGug5J'  # Remplacez par votre clé publique
+FEDAPAY_SECRET_KEY = 'sk_live_iNDAopj2pKWwFh-0UEbXOjFt'  # Remplacez par votre clé secrète
+FEDAPAY_ENVIRONMENT = 'live'  # 'sandbox' ou 'live'
+FEDAPAY_CALLBACK_URL = 'http://localhost:8000/epreuves/paiement/callback/'  # URL de callback
