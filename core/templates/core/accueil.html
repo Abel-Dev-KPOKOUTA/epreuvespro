@@ -1318,6 +1318,154 @@
                 width: 100%;
             }
         }
+
+        /* Messages de notification */
+        .messages-container {
+            position: fixed;
+            top: 100px;
+            right: 2rem;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-width: 400px;
+        }
+
+        .alert {
+            background: var(--white);
+            padding: 1.25rem 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border-left: 4px solid;
+            animation: slideInRight 0.4s ease;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .alert-success {
+            border-left-color: var(--success);
+            background: linear-gradient(to right, rgba(5, 150, 105, 0.1), var(--white));
+        }
+
+        .alert-error {
+            border-left-color: #ef4444;
+            background: linear-gradient(to right, rgba(239, 68, 68, 0.1), var(--white));
+        }
+
+        .alert-warning {
+            border-left-color: var(--gold);
+            background: linear-gradient(to right, rgba(217, 119, 6, 0.1), var(--white));
+        }
+
+        .alert-info {
+            border-left-color: var(--primary);
+            background: linear-gradient(to right, rgba(30, 64, 175, 0.1), var(--white));
+        }
+
+        .alert-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .alert-success .alert-icon {
+            background: var(--success);
+            color: var(--white);
+        }
+
+        .alert-error .alert-icon {
+            background: #ef4444;
+            color: var(--white);
+        }
+
+        .alert-warning .alert-icon {
+            background: var(--gold);
+            color: var(--white);
+        }
+
+        .alert-info .alert-icon {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .alert-text {
+            flex: 1;
+            color: var(--gray-700);
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .alert-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--gray-400);
+            cursor: pointer;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.3s;
+            flex-shrink: 0;
+        }
+
+        .alert-close:hover {
+            color: var(--gray-700);
+        }
+
+        /* Auto-dismiss animation */
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .messages-container {
+                right: 1rem;
+                left: 1rem;
+                max-width: none;
+                top: 80px;
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     </style>
 </head>
 <body>
@@ -1340,6 +1488,20 @@
             <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
         </div>
     </nav>
+        <!-- Messages de notification -->
+    {% if messages %}
+    <div class="messages-container">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            <span class="alert-icon">
+                {% if message.tags == 'success' %}✓{% elif message.tags == 'error' %}✕{% elif message.tags == 'warning' %}⚠{% else %}ℹ{% endif %}
+            </span>
+            <span class="alert-text">{{ message }}</span>
+            <button class="alert-close" onclick="this.parentElement.remove()">×</button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
 
     <!-- Mobile Menu -->
     <div class="mobile-nav" id="mobileNav">
@@ -1795,6 +1957,23 @@
                 cardObserver.observe(card);
             });
         });
+        // Auto-dismiss messages after 5 seconds
+        document.addEventListener('DOMContentLoaded', () => {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    alert.style.animation = 'fadeOut 0.4s ease forwards';
+                    setTimeout(() => alert.remove(), 400);
+                }, 5000);
+            });
+        });
+
+
+
+
+
+
+
     </script>
 </body>
 </html>

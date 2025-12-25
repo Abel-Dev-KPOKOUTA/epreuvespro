@@ -121,6 +121,13 @@ body {
     min-height: 100vh;
 }
 
+
+
+
+
+
+
+
 /* Header */
 .header {
     background: var(--white);
@@ -132,6 +139,21 @@ body {
     position: sticky;
     top: 0;
     z-index: 50;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.header.scrolled {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.header.hidden {
+    transform: translateY(-100%);
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
 }
 
 .header-left h1 {
@@ -146,11 +168,6 @@ body {
     font-size: 0.875rem;
 }
 
-.header-right {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
 
 .notification-btn {
     position: relative;
@@ -603,6 +620,7 @@ body {
     }
 }
 
+
 @media (max-width: 768px) {
     .content {
         padding: 1rem;
@@ -624,7 +642,60 @@ body {
         grid-template-columns: 1fr;
     }
 
+    /* Header optimisé pour mobile */
     .header {
-        padding: 1rem;
+        padding: 0.875rem 1rem;
+    }
+    
+    .header-left {
+        gap: 0.75rem;
+    }
+    
+    .header-left h1 {
+        font-size: 1.125rem;
+        margin-bottom: 0;
+    }
+    
+    .header-subtitle {
+        font-size: 0.75rem;
+    }
+    
+    /* Cacher le sous-titre sur très petit écran */
+    .user-menu {
+        padding: 0.5rem 0.75rem;
+    }
+    
+    .user-avatar {
+        width: 36px;
+        height: 36px;
+        font-size: 0.875rem;
+    }
+}
+
+/* Optimisation pour très petits écrans */
+@media (max-width: 480px) {
+    .header {
+        padding: 0.75rem 1rem;
+    }
+    
+    .header-left h1 {
+        font-size: 1rem;
+    }
+    
+    .header-subtitle {
+        display: none;
+    }
+    
+    .mobile-menu-btn {
+        padding: 0.5rem;
+        margin-right: 0.5rem;
+    }
+    
+    .welcome-content h2 {
+        font-size: 1.25rem;
+    }
+    
+    .welcome-section {
+        padding: 1.25rem;
     }
 }

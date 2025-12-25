@@ -155,11 +155,99 @@
             {% endif %}
         </div>
     </div>
-
+    
     <script>
+        // Toggle Sidebar
         function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('mobile-show');
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('mobile-show');
+            
+            // Overlay pour fermer la sidebar en cliquant en dehors
+            if (sidebar.classList.contains('mobile-show')) {
+                if (!document.getElementById('sidebar-overlay')) {
+                    const overlay = document.createElement('div');
+                    overlay.id = 'sidebar-overlay';
+                    overlay.style.cssText = `
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background: rgba(0, 0, 0, 0.5);
+                        z-index: 99;
+                    `;
+                    overlay.onclick = () => {
+                        sidebar.classList.remove('mobile-show');
+                        overlay.remove();
+                    };
+                    document.body.appendChild(overlay);
+                }
+            } else {
+                const overlay = document.getElementById('sidebar-overlay');
+                if (overlay) overlay.remove();
+            }
         }
+
+        // Auto-hide header on scroll (Mobile uniquement)
+        let lastScrollTop = 0;
+        let scrollThreshold = 10;
+        const header = document.querySelector('.header');
+        
+        window.addEventListener('scroll', function() {
+            const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+            
+            // Ajouter l'ombre quand on scroll
+            if (currentScroll > 10) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+            
+            // Auto-hide uniquement sur mobile (écrans <= 768px)
+            if (window.innerWidth <= 768) {
+                if (currentScroll > lastScrollTop && currentScroll > 80) {
+                    // Scroll vers le bas - Cacher le header
+                    header.classList.add('hidden');
+                } else if (currentScroll < lastScrollTop) {
+                    // Scroll vers le haut - Afficher le header
+                    header.classList.remove('hidden');
+                }
+            } else {
+                // Sur desktop, toujours afficher le header
+                header.classList.remove('hidden');
+            }
+            
+            lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+        }, { passive: true });
+
+        // Gérer le resize de la fenêtre
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                header.classList.remove('hidden');
+            }
+        });
+
+        // Fermer la sidebar en cliquant sur un lien (mobile)
+        document.querySelectorAll('.menu-link').forEach(link => {
+            link.addEventListener('click', function() {
+                if (window.innerWidth <= 1024) {
+                    const sidebar = document.getElementById('sidebar');
+                    const overlay = document.getElementById('sidebar-overlay');
+                    
+                    sidebar.classList.remove('mobile-show');
+                    if (overlay) overlay.remove();
+                }
+            });
+        });
     </script>
+
+
+
+
+
+
+
+
+
 </body>
 </html>
