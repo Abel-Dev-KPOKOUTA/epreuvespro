@@ -127,7 +127,8 @@
             min-height: 100vh;
         }
 
-        /* Header */
+
+        /* Header de base */
         .header {
             background: var(--white);
             border-bottom: 1px solid var(--gray-200);
@@ -138,6 +139,21 @@
             position: sticky;
             top: 0;
             z-index: 50;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .header.scrolled {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .header.hidden {
+            transform: translateY(-100%);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
 
         .header-left h1 {
@@ -151,6 +167,66 @@
             color: var(--gray-600);
             font-size: 0.875rem;
         }
+
+        .header-right {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        /* Mobile Menu Button */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            color: var(--dark);
+        }
+
+        /* Responsive Tablet */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.mobile-show {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .header {
+                padding: 1rem 1.5rem;
+            }
+            
+            .header-left {
+                gap: 0.75rem;
+            }
+            
+            .header-left h1 {
+                font-size: 1.25rem;
+            }
+            
+            .header-subtitle {
+                font-size: 0.75rem;
+            }
+
+            .user-info {
+                display: none;
+            }
+        }
+
+
+
+
+
 
         .user-menu {
             display: flex;
@@ -612,7 +688,7 @@
             padding: 0.5rem;
         }
 
-        /* Responsive */
+        /* Responsive Tablet */
         @media (max-width: 1024px) {
             .sidebar {
                 transform: translateX(-100%);
@@ -631,20 +707,27 @@
             }
 
             .header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 1rem;
+                padding: 1rem 1.5rem;
+            }
+            
+            .header-left {
+                gap: 0.75rem;
+            }
+            
+            .header-left h1 {
+                font-size: 1.25rem;
+            }
+            
+            .header-subtitle {
+                font-size: 0.75rem;
             }
 
-            .plans-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .plan-card.recommended {
-                transform: scale(1);
+            .user-info {
+                display: none;
             }
         }
 
+        /* Responsive Mobile */
         @media (max-width: 768px) {
             .content {
                 padding: 1rem;
@@ -667,10 +750,71 @@
                 text-align: center;
             }
 
-            .user-info {
-                display: none;
+            /* Header optimisé pour mobile */
+            .header {
+                padding: 0.875rem 1rem;
+            }
+            
+            .header-left {
+                gap: 0.75rem;
+            }
+            
+            .header-left h1 {
+                font-size: 1.125rem;
+                margin-bottom: 0;
+            }
+            
+            .header-subtitle {
+                font-size: 0.75rem;
+            }
+            
+            .user-menu {
+                padding: 0.5rem 0.75rem;
+            }
+            
+            .user-avatar {
+                width: 36px;
+                height: 36px;
+                font-size: 0.875rem;
             }
         }
+
+        /* Très petits écrans */
+        @media (max-width: 480px) {
+            .header {
+                padding: 0.75rem 1rem;
+            }
+            
+            .header-left h1 {
+                font-size: 1rem;
+            }
+            
+            .header-subtitle {
+                display: none; /* Masquer le sous-titre sur très petits écrans */
+            }
+            
+            .mobile-menu-btn {
+                padding: 0.5rem;
+                margin-right: 0.5rem;
+                font-size: 1.25rem;
+            }
+            
+            .current-subscription {
+                padding: 1.25rem;
+            }
+            
+            .subscription-details h2 {
+                font-size: 1.5rem;
+            }
+            
+            .detail-item p {
+                font-size: 1.25rem;
+            }
+        }
+
+
+
+
     </style>
 </head>
 <body>
@@ -973,42 +1117,123 @@
         </div>
     </div>
 
+
+
+
+
+    // Toggle Sidebar avec overlay
     <script>
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('mobile-show');
-        }
-
-        document.addEventListener('click', function(event) {
-            const sidebar = document.getElementById('sidebar');
-            const menuBtn = document.querySelector('.mobile-menu-btn');
-            
-            if (window.innerWidth <= 1024) {
-                if (!sidebar.contains(event.target) && !menuBtn.contains(event.target)) {
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.classList.toggle('mobile-show');
+        
+        // Créer/supprimer l'overlay
+        if (sidebar.classList.contains('mobile-show')) {
+            if (!document.getElementById('sidebar-overlay')) {
+                const overlay = document.createElement('div');
+                overlay.id = 'sidebar-overlay';
+                overlay.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: rgba(0, 0, 0, 0.5);
+                    z-index: 998;
+                `;
+                overlay.onclick = () => {
                     sidebar.classList.remove('mobile-show');
-                }
+                    overlay.remove();
+                };
+                document.body.appendChild(overlay);
+            }
+        } else {
+            const overlay = document.getElementById('sidebar-overlay');
+            if (overlay) overlay.remove();
+        }
+    }
+
+    // Auto-hide header on scroll (Mobile uniquement)
+    let lastScrollTop = 0;
+    const header = document.querySelector('.header');
+
+    window.addEventListener('scroll', function() {
+        const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+        
+        // Ajouter l'ombre quand on scroll
+        if (currentScroll > 10) {
+            header.classList.add('scrolled');
+        } else {
+            header.classList.remove('scrolled');
+        }
+        
+        // Auto-hide uniquement sur mobile (écrans <= 768px)
+        if (window.innerWidth <= 768) {
+            if (currentScroll > lastScrollTop && currentScroll > 80) {
+                // Scroll vers le bas - Cacher le header
+                header.classList.add('hidden');
+            } else if (currentScroll < lastScrollTop) {
+                // Scroll vers le haut - Afficher le header
+                header.classList.remove('hidden');
+            }
+        } else {
+            // Sur desktop, toujours afficher le header
+            header.classList.remove('hidden');
+        }
+        
+        lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+    }, { passive: true });
+
+    // Gérer le resize de la fenêtre
+    window.addEventListener('resize', function() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        
+        if (window.innerWidth > 1024) {
+            sidebar.classList.remove('mobile-show');
+            if (overlay) overlay.remove();
+        }
+        
+        if (window.innerWidth > 768) {
+            header.classList.remove('hidden');
+        }
+    });
+
+    // Fermer la sidebar en cliquant sur un lien (mobile)
+    document.querySelectorAll('.menu-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            if (window.innerWidth <= 1024) {
+                setTimeout(() => {
+                    const sidebar = document.getElementById('sidebar');
+                    const overlay = document.getElementById('sidebar-overlay');
+                    
+                    sidebar.classList.remove('mobile-show');
+                    if (overlay) overlay.remove();
+                }, 100);
             }
         });
+    });
 
-        window.addEventListener('resize', function() {
-            const sidebar = document.getElementById('sidebar');
-            if (window.innerWidth > 1024) {
-                sidebar.classList.remove('mobile-show');
+    // Smooth scroll pour les ancres
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
             }
         });
-
-        // Smooth scroll
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
+    });
     </script>
+
+
+
+
+
+
+
 </body>
 </html>

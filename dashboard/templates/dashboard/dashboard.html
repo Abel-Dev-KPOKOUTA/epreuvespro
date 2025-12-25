@@ -8,6 +8,228 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
 </head>
+<style>
+    /* Sidebar z-index et responsive fixes */
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 280px;
+        height: 100vh;
+        background: var(--white);
+        border-right: 1px solid var(--gray-200);
+        padding: 2rem 0;
+        overflow-y: auto;
+        z-index: 1000;
+        transition: transform 0.3s;
+    }
+
+    .sidebar.mobile-show {
+        transform: translateX(0);
+        z-index: 1000;
+    }
+
+    .menu-link {
+        position: relative;
+        z-index: 1;
+        pointer-events: auto;
+        cursor: pointer;
+    }
+
+    .sidebar-menu {
+        position: relative;
+        z-index: 1;
+    }
+
+    .menu-item {
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Header responsive amélioré */
+    .header {
+        background: var(--white);
+        border-bottom: 1px solid var(--gray-200);
+        padding: 1.25rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .header.scrolled {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .header.hidden {
+        transform: translateY(-100%);
+    }
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .header-right {
+        display: flex;
+        gap: 0.75rem;
+    }
+
+    /* Mobile Menu Button */
+    .mobile-menu-btn {
+        display: none;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--dark);
+        padding: 0.5rem;
+    }
+
+    /* Responsive Tablet */
+    @media (max-width: 1024px) {
+        .sidebar {
+            transform: translateX(-100%);
+        }
+
+        .sidebar.mobile-show {
+            transform: translateX(0);
+        }
+
+        .main-content {
+            margin-left: 0;
+        }
+
+        .mobile-menu-btn {
+            display: block;
+        }
+
+        .header {
+            padding: 1rem 1.5rem;
+        }
+
+        .header-left {
+            gap: 0.75rem;
+        }
+
+        .header-left h1 {
+            font-size: 1.25rem;
+        }
+
+        .header-subtitle {
+            font-size: 0.75rem;
+        }
+
+        .user-info {
+            display: none;
+        }
+    }
+
+    /* Responsive Mobile */
+    @media (max-width: 768px) {
+        .content {
+            padding: 1rem;
+        }
+
+        .welcome-section {
+            padding: 1.5rem;
+        }
+
+        .welcome-content h2 {
+            font-size: 1.5rem;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .quick-actions-grid {
+            grid-template-columns: 1fr;
+        }
+
+        /* Header optimisé pour mobile */
+        .header {
+            padding: 0.875rem 1rem;
+        }
+        
+        .header-left {
+            gap: 0.75rem;
+        }
+        
+        .header-left h1 {
+            font-size: 1.125rem;
+            margin-bottom: 0;
+        }
+        
+        .header-subtitle {
+            font-size: 0.75rem;
+        }
+        
+        .user-menu {
+            padding: 0.5rem 0.75rem;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            font-size: 0.875rem;
+        }
+    }
+
+    /* Optimisation pour très petits écrans */
+    @media (max-width: 480px) {
+        .header {
+            padding: 0.75rem 1rem;
+        }
+        
+        .header-left h1 {
+            font-size: 1rem;
+        }
+        
+        .header-subtitle {
+            display: none;
+        }
+        
+        .mobile-menu-btn {
+            padding: 0.5rem;
+            margin-right: 0.5rem;
+            font-size: 1.25rem;
+        }
+        
+        .welcome-content h2 {
+            font-size: 1.25rem;
+        }
+        
+        .welcome-section {
+            padding: 1.25rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.25rem;
+            font-size: 0.875rem;
+        }
+
+        .stat-card {
+            padding: 1.25rem;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+        }
+
+        .subscription-card {
+            padding: 1.25rem;
+        }
+
+        .subscription-title {
+            font-size: 1.25rem;
+        }
+    }
+</style>
 <body>
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
@@ -155,14 +377,13 @@
             {% endif %}
         </div>
     </div>
-    
     <script>
-        // Toggle Sidebar
+        // Toggle Sidebar avec overlay
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             sidebar.classList.toggle('mobile-show');
             
-            // Overlay pour fermer la sidebar en cliquant en dehors
+            // Créer/supprimer l'overlay
             if (sidebar.classList.contains('mobile-show')) {
                 if (!document.getElementById('sidebar-overlay')) {
                     const overlay = document.createElement('div');
@@ -174,7 +395,7 @@
                         right: 0;
                         bottom: 0;
                         background: rgba(0, 0, 0, 0.5);
-                        z-index: 99;
+                        z-index: 998;
                     `;
                     overlay.onclick = () => {
                         sidebar.classList.remove('mobile-show');
@@ -190,9 +411,8 @@
 
         // Auto-hide header on scroll (Mobile uniquement)
         let lastScrollTop = 0;
-        let scrollThreshold = 10;
         const header = document.querySelector('.header');
-        
+
         window.addEventListener('scroll', function() {
             const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
             
@@ -222,6 +442,14 @@
 
         // Gérer le resize de la fenêtre
         window.addEventListener('resize', function() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            
+            if (window.innerWidth > 1024) {
+                sidebar.classList.remove('mobile-show');
+                if (overlay) overlay.remove();
+            }
+            
             if (window.innerWidth > 768) {
                 header.classList.remove('hidden');
             }
@@ -229,18 +457,19 @@
 
         // Fermer la sidebar en cliquant sur un lien (mobile)
         document.querySelectorAll('.menu-link').forEach(link => {
-            link.addEventListener('click', function() {
+            link.addEventListener('click', function(e) {
                 if (window.innerWidth <= 1024) {
-                    const sidebar = document.getElementById('sidebar');
-                    const overlay = document.getElementById('sidebar-overlay');
-                    
-                    sidebar.classList.remove('mobile-show');
-                    if (overlay) overlay.remove();
+                    setTimeout(() => {
+                        const sidebar = document.getElementById('sidebar');
+                        const overlay = document.getElementById('sidebar-overlay');
+                        
+                        sidebar.classList.remove('mobile-show');
+                        if (overlay) overlay.remove();
+                    }, 100);
                 }
             });
         });
     </script>
-
 
 
 
